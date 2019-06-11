@@ -10,7 +10,6 @@ package btcjson
 import (
 	"encoding/json"
 	"fmt"
-
 	// "github.com/btcsuite/btcd/wire"
 )
 

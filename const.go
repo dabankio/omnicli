@@ -8,4 +8,6 @@ const (
 	RPCPortRegtest = 18443
 
 	BitcoinBinPathEnv = "BITCOIN_BIN_PATH"
+
+	CmdParamRegtest = "-regtest"
 )

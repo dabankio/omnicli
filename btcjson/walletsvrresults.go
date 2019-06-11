@@ -17,22 +17,28 @@ type GetTransactionDetailsResult struct {
 	InvolvesWatchOnly bool     `json:"involveswatchonly,omitempty"`
 	Fee               *float64 `json:"fee,omitempty"`
 	Vout              uint32   `json:"vout"`
+
+	Label     string `json:"label"`     // : "label",              (string) A comment for the address/transaction, if any
+	Abandoned bool   `json:"abandoned"` //                  (bool) 'true' if the transaction has been abandoned (inputs are respendable). Only available for the 'send' category of transactions.
+
 }
 
 // GetTransactionResult models the data from the gettransaction command.
 type GetTransactionResult struct {
-	Amount          float64                       `json:"amount"`
-	Fee             float64                       `json:"fee,omitempty"`
-	Confirmations   int64                         `json:"confirmations"`
-	BlockHash       string                        `json:"blockhash"`
-	BlockIndex      int64                         `json:"blockindex"`
-	BlockTime       int64                         `json:"blocktime"`
-	TxID            string                        `json:"txid"`
-	WalletConflicts []string                      `json:"walletconflicts"`
-	Time            int64                         `json:"time"`
-	TimeReceived    int64                         `json:"timereceived"`
-	Details         []GetTransactionDetailsResult `json:"details"`
-	Hex             string                        `json:"hex"`
+	Amount        float64 `json:"amount"`
+	Fee           float64 `json:"fee,omitempty"`
+	Confirmations int64   `json:"confirmations"`
+	BlockHash     string  `json:"blockhash"`
+	BlockIndex    int64   `json:"blockindex"`
+	BlockTime     int64   `json:"blocktime"`
+	TxID          string  `json:"txid"`
+	// WalletConflicts []string                      `json:"walletconflicts"`
+	Time         int64                         `json:"time"`
+	TimeReceived int64                         `json:"timereceived"`
+	Details      []GetTransactionDetailsResult `json:"details"`
+	Hex          string                        `json:"hex"`
+
+	Bip125Replaceable string `json:"bip-125-replaceable,omitempty"` //replaceable": "yes|no|unknown",  (string) Whether this transaction could be replaced due to BIP125 (replace-by-fee); may be unknown for unconfirmed transactions not in the mempool
 }
 
 // InfoWalletResult models the data returned by the wallet server getinfo
@@ -106,6 +112,14 @@ type ListSinceBlockResult struct {
 	LastBlock    string                   `json:"lastblock"`
 }
 
+// ListUnspentQueryOptions .
+type ListUnspentQueryOptions struct {
+	MinimumAmount    float64 `json:"minimumAmount"`    //       (numeric or string, optional, default=0) Minimum value of each UTXO in BTC
+	MaximumAmount    float64 `json:"maximumAmount"`    //       (numeric or string, optional, default=unlimited) Maximum value of each UTXO in BTC
+	MaximumCount     int     `json:"maximumCount"`     //,             (numeric, optional, default=unlimited) Maximum number of UTXOs
+	MinimumSumAmount float64 `json:"minimumSumAmount"` //    (numeric or string, optional, default=unlimited) Minimum sum value of all UTXOs in BTC
+}
+
 // ListUnspentResult models a successful response from the listunspent request.
 type ListUnspentResult struct {
 	TxID          string  `json:"txid"`
@@ -117,6 +131,12 @@ type ListUnspentResult struct {
 	Amount        float64 `json:"amount"`
 	Confirmations int64   `json:"confirmations"`
 	Spendable     bool    `json:"spendable"`
+
+	Label         string `json:"label"`         //        (string) The associated label, or "" for the default label
+	WitnessScript string `json:"witnessScript"` // (string) witnessScript if the scriptPubKey is P2WSH or P2SH-P2WSH
+	Solvable      bool   `json:"solvable"`      //         (bool) Whether we know how to spend this output, ignoring the lack of keys
+	Desc          string `json:"desc"`          //             (string, only when solvable) A descriptor for spending this output
+	Safe          bool   `json:"safe"`          //             (bool) Whether this output is considered safe to spend. Unconfirmed transactions from outside keys and unconfirmed replacement transactions are considered unsafe and are not eligible for spending by fundrawtransaction and sendtoaddress.
 }
 
 // SignRawTransactionError models the data that contains script verification

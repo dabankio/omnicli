@@ -2,18 +2,13 @@ package btccli
 
 import (
 	"encoding/json"
+	"github.com/lemon-sunxiansong/btccli/btcjson"
 	"os/exec"
 	"strconv"
 )
 
-// MultisigResp .
-type MultisigResp struct {
-	Address      string `json:"address,omitempty"`      //multisigaddress",  (string) The value of the new multisig address.
-	RedeemScript string `json:"redeemScript,omitempty"` //script"       (string) The string value of the hex-encoded redemption script.
-}
-
 // CliCreatemultisig https://bitcoin.org/en/developer-reference#createmultisig
-func CliCreatemultisig(nRequired uint8, keys []string, addressType *string) (MultisigResp, error) {
+func CliCreatemultisig(nRequired uint8, keys []string, addressType *string) (btcjson.CreateMultiSigResult, error) {
 	args := []string{
 		CmdParamRegtest, "createmultisig", strconv.Itoa(int(nRequired)), toJson(keys),
 	}
@@ -22,7 +17,7 @@ func CliCreatemultisig(nRequired uint8, keys []string, addressType *string) (Mul
 	}
 	cmdPrint := cmdAndPrint(exec.Command(CmdBitcoinCli, args...))
 	//TODO validate address
-	var resp MultisigResp
+	var resp btcjson.CreateMultiSigResult
 	err := json.Unmarshal([]byte(cmdPrint), &resp)
 	return resp, err
 }

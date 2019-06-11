@@ -46,7 +46,7 @@ func scanChain(op scanOps) {
 		for ti, txHash := range blc.Tx {
 			tx, _ := CliGettransaction(txHash.Hash, true)
 
-			if tx.Txid == "" {
+			if tx.TxID == "" {
 				fmt.Printf("skiped empty tx %d/%d\n", i, ti)
 				continue
 			}

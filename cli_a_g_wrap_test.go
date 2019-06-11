@@ -1,6 +1,7 @@
 package btccli
 
 import (
+	"github.com/lemon-sunxiansong/btccli/btcjson"
 	"fmt"
 	"testing"
 )
@@ -33,7 +34,7 @@ func TestCliCreatemultisig(t *testing.T) {
 		fmt.Println("addrs", addrs)
 	}
 
-	var multisigResp MultisigResp
+	var multisigResp btcjson.CreateMultiSigResult
 	{ //create multisig address
 		var keys []string
 		for _, info := range addrs {
