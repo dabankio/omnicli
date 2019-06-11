@@ -16,7 +16,17 @@ func jsonStr(i interface{}) string {
 	return string(b)
 }
 
+func ToJsonIndent(i interface{}) string {
+	b, _ := json.MarshalIndent(i, "", " ")
+	return string(b)
+}
+
 func toJson(i interface{}) string {
+	b, _ := json.Marshal(i)
+	return string(b)
+}
+
+func ToJson(i interface{}) string {
 	b, _ := json.Marshal(i)
 	return string(b)
 }
