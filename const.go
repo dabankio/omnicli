@@ -1,5 +1,4 @@
-package btccliwrap
-
+package btccli
 
 // 固定常量
 const (

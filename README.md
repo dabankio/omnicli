@@ -11,6 +11,7 @@ Zero dependency.
 Im developing under macOS and linux, not enough time to deal with windows.
 
 ## How to use?
+- env variable `BITCOIN_BIN_PATH` to your [bitcoin bin] path (see init.go
 - `init.go`
 - `func.go`
 - other funcs normally start with name which same as file preffix (eg:func in `cli_wrap.go` usually like cliXxx)

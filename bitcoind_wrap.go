@@ -1,24 +1,15 @@
-package btccliwrap
+package btccli
 
 import (
 	"fmt"
 	"os/exec"
-	"runtime"
-	"strconv"
-	"strings"
 	"time"
 )
 
 // BitcoindRegtest 启动bitcoind -regtest 用以测试,
 func BitcoindRegtest() (closeChan chan struct{}, err error) {
-	if strings.Contains(runtime.GOOS, "linux") {
-		checkPortCmd := exec.Command("netstat", "-ntpl")
-		cmdPrint := cmdAndPrint(checkPortCmd)
-		if strings.Contains(cmdPrint, strconv.Itoa(RPCPortRegtest)) && strings.Contains(cmdPrint, "bitcoin") {
-			panic("bitcoind 似乎已经运行在18443端口了,不先杀掉的话数据可能有问题")
-		}
-	} else {
-		panic("其他平台尚未實現")
+	if cmdIsPortContainsNameRunning(RPCPortRegtest, "bitcoin") {
+		return nil, fmt.Errorf("bitcoind 似乎已经运行在18443端口了,不先杀掉的话数据可能有问题")
 	}
 
 	closeChan = make(chan struct{})
@@ -30,7 +21,7 @@ func BitcoindRegtest() (closeChan chan struct{}, err error) {
 	//233
 	cmd := exec.Command(CmdBitcoind,
 		"-regtest",
-		"-deprecatedrpc=generate",
+		// "-deprecatedrpc=generate",
 		"-txindex",
 		"-rpcauth=rpcusr:656f9dabc62f0eb697c801369617dc60$422d7fca742d4a59460f941dc9247c782558367edcbf1cd790b2b7ff5624fc1b",
 	)

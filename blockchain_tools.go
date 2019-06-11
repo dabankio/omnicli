@@ -1,7 +1,6 @@
-package btccliwrap
+package btccli
 
 import (
-	"time"
 	"fmt"
 )
 
@@ -16,47 +15,47 @@ func scanAll() {
 }
 func scanChain(op scanOps) {
 	dividePrint("迭代所有的块")
-	time.Sleep(time.Second)
 
-	count, err := cliGetblockcount()
+	count, err := CliGetblockcount()
 	panicIf(err, "Failed to get block count")
 	fmt.Println("Total height:", count)
 
-	for i := int(count - 1); i >= 0; i-- {
-		// blchash, _ := cliGetblockhash(i)
-		// blc, _ := cliGetBlock(blchash, 2)
+	for i := count - 1; i >= 0; i-- {
+		blchash, _ := CliGetblockhash(i)
+		_, _, blc, err := CliGetblock(blchash, 2)
+		panicIf(err, "Failed to get block")
 
-		// if !op.includeGenBlock && len(blc.Tx) < 2 {
-		// 	fmt.Println("TX len < 2, skiped", i)
-		// 	continue
-		// }
+		if !op.includeGenBlock && len(blc.Tx) < 2 {
+			fmt.Println("TX len < 2, skiped", i)
+			continue
+		}
 
-		// fmt.Println("------------")
-		// if op.simpleBlock {
-		// 	m := map[string]interface{}{
-		// 		"hash":    blc.Hash,
-		// 		"confirm": blc.Confirmations,
-		// 		"tx":      blc.Tx,
-		// 	}
-		// 	fmt.Println("hight", i, jsonStr(m))
-		// } else {
-		// 	fmt.Println("hight", i, jsonStr(blc))
-		// }
-		// fmt.Println()
+		fmt.Println("------------")
+		if op.simpleBlock {
+			m := map[string]interface{}{
+				"hash":    blc.Hash,
+				"confirm": blc.Confirmations,
+				"tx":      blc.Tx,
+			}
+			fmt.Println("hight", i, jsonStr(m))
+		} else {
+			fmt.Println("hight", i, jsonStr(blc))
+		}
+		fmt.Println()
 
-		// for ti, txHash := range blc.Tx {
-		// 	tx, _ := bc.GetTransaction(txHash)
+		for ti, txHash := range blc.Tx {
+			tx, _ := CliGettransaction(txHash.Hash, true)
 
-		// 	if tx.TxID == "" {
-		// 		fmt.Printf("skiped empty tx %d/%d\n", i, ti)
-		// 		continue
-		// 	}
+			if tx.Txid == "" {
+				fmt.Printf("skiped empty tx %d/%d\n", i, ti)
+				continue
+			}
 
-		// 	if !op.includeCoinbaseTx && isCoinbaseTx(tx) {
-		// 		fmt.Println("skiped coinbase tx")
-		// 		continue
-		// 	}
-		// 	fmt.Println("tx", ti, jsonStr(tx))
-		// }
+			if !op.includeCoinbaseTx && isCoinbaseTx(tx) {
+				fmt.Println("skiped coinbase tx")
+				continue
+			}
+			fmt.Println("tx", ti, jsonStr(tx))
+		}
 	}
 }

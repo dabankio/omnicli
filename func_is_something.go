@@ -1,4 +1,4 @@
-package btccliwrap
+package btccli
 
 func isCoinbaseTx(tx interface{}) bool {
 	return false

@@ -1,3 +1,3 @@
-module github.com/lemon-sunxiansong/btccliwrap
+module github.com/lemon-sunxiansong/btccli
 
 go 1.12

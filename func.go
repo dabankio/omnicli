@@ -1,4 +1,4 @@
-package btccliwrap
+package btccli
 
 import (
 	"encoding/json"
@@ -13,6 +13,11 @@ func panicIf(e error, msg string) {
 
 func jsonStr(i interface{}) string {
 	b, _ := json.MarshalIndent(i, "", " ")
+	return string(b)
+}
+
+func toJson(i interface{}) string {
+	b, _ := json.Marshal(i)
 	return string(b)
 }
 
