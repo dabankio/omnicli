@@ -57,6 +57,7 @@ type CreateRawTransactionCmd struct {
 	Inputs   []TransactionInput
 	Amounts  map[string]float64 `jsonrpcusage:"{\"address\":amount,...}"` // In BTC
 	LockTime *int64
+	Outputs  []map[string]interface{}
 }
 
 // NewCreateRawTransactionCmd returns a new instance which can be used to issue
@@ -75,7 +76,8 @@ func NewCreateRawTransactionCmd(inputs []TransactionInput, amounts map[string]fl
 
 // DecodeRawTransactionCmd defines the decoderawtransaction JSON-RPC command.
 type DecodeRawTransactionCmd struct {
-	HexTx string
+	HexTx     string
+	Iswitness *bool
 }
 
 // NewDecodeRawTransactionCmd returns a new instance which can be used to issue
@@ -462,8 +464,9 @@ func NewGetRawMempoolCmd(verbose *bool) *GetRawMempoolCmd {
 // NOTE: This field is an int versus a bool to remain compatible with Bitcoin
 // Core even though it really should be a bool.
 type GetRawTransactionCmd struct {
-	Txid    string
-	Verbose *int `jsonrpcdefault:"0"`
+	Txid      string
+	Verbose   *int `jsonrpcdefault:"0"`
+	Blockhash *string
 }
 
 // NewGetRawTransactionCmd returns a new instance which can be used to issue a
@@ -777,7 +780,7 @@ func init() {
 	flags := UsageFlag(0)
 
 	MustRegisterCmd("addnode", (*AddNodeCmd)(nil), flags)
-	MustRegisterCmd("createrawtransaction", (*CreateRawTransactionCmd)(nil), flags)
+	// MustRegisterCmd("createrawtransaction", (*CreateRawTransactionCmd)(nil), flags)
 	MustRegisterCmd("decoderawtransaction", (*DecodeRawTransactionCmd)(nil), flags)
 	MustRegisterCmd("decodescript", (*DecodeScriptCmd)(nil), flags)
 	MustRegisterCmd("getaddednodeinfo", (*GetAddedNodeInfoCmd)(nil), flags)

@@ -9,7 +9,7 @@ import (
 
 func CliAddmultisigaddress(cmd btcjson.AddMultisigAddressCmd) (btcjson.CreateMultiSigResult, error) {
 	args := []string{
-		CmdParamRegtest, "addmultisigaddress", strconv.Itoa(int(cmd.NRequired)), toJson(cmd.Keys),
+		CmdParamRegtest, "addmultisigaddress", strconv.Itoa(int(cmd.NRequired)), ToJson(cmd.Keys),
 	}
 	if cmd.Label != nil {
 		args = append(args, *cmd.Label)
@@ -29,7 +29,7 @@ func CliAddmultisigaddress(cmd btcjson.AddMultisigAddressCmd) (btcjson.CreateMul
 // CliCreatemultisig https://bitcoin.org/en/developer-reference#createmultisig
 func CliCreatemultisig(nRequired uint8, keys []string, addressType *string) (btcjson.CreateMultiSigResult, error) {
 	args := []string{
-		CmdParamRegtest, "createmultisig", strconv.Itoa(int(nRequired)), toJson(keys),
+		CmdParamRegtest, "createmultisig", strconv.Itoa(int(nRequired)), ToJson(keys),
 	}
 	if addressType != nil {
 		args = append(args, *addressType)
@@ -39,6 +39,49 @@ func CliCreatemultisig(nRequired uint8, keys []string, addressType *string) (btc
 	var resp btcjson.CreateMultiSigResult
 	err := json.Unmarshal([]byte(cmdPrint), &resp)
 	return resp, err
+}
+
+// CliCreaterawtransaction https://bitcoin.org/en/developer-reference#createrawtransaction
+func CliCreaterawtransaction(cmd btcjson.CreateRawTransactionCmd) (string, error) {
+	args := []string{
+		CmdParamRegtest,
+		"createrawtransaction",
+		ToJson(cmd.Inputs),
+		ToJson(cmd.Outputs),
+	}
+	if cmd.LockTime != nil {
+		args = append(args, strconv.Itoa(int(*cmd.LockTime)))
+	}
+	cmdPrint := cmdAndPrint(exec.Command(
+		CmdBitcoinCli, args...,
+	))
+	//TODO validate hex
+	return cmdPrint, nil
+}
+
+// CliDecoderawtransaction https://bitcoin.org/en/developer-reference#decoderawtransaction
+func CliDecoderawtransaction(cmd btcjson.DecodeRawTransactionCmd) (*btcjson.DecodeRawTransactionResult, error) {
+	args := []string{
+		CmdParamRegtest,
+		"decoderawtransaction",
+		cmd.HexTx,
+	}
+	if cmd.Iswitness != nil {
+		args = append(args, strconv.FormatBool(*cmd.Iswitness))
+	}
+	cmdPrint := cmdAndPrint(exec.Command(CmdBitcoinCli, args...))
+	var res btcjson.DecodeRawTransactionResult
+	err := json.Unmarshal([]byte(cmdPrint), &res)
+	return &res, err
+}
+
+// CliDumpprivkey https://bitcoin.org/en/developer-reference#dumpprivkey
+func CliDumpprivkey(addr string) (string, error) {
+	cmdPrint := cmdAndPrint(exec.Command(
+		CmdBitcoinCli, CmdParamRegtest, "dumpprivkey", addr,
+	))
+	//TODO validate privKey
+	return cmdPrint, nil
 }
 
 // CliGeneratetoaddress https://bitcoin.org/en/developer-reference#generatetoaddress
@@ -52,13 +95,4 @@ func CliGeneratetoaddress(nBlocks uint, address string, maxtriesPtr *uint) ([]st
 	var hashs []string
 	err := json.Unmarshal([]byte(cmdPrint), &hashs)
 	return hashs, err
-}
-
-// CliDumpprivkey https://bitcoin.org/en/developer-reference#dumpprivkey
-func CliDumpprivkey(addr string) (string, error) {
-	cmdPrint := cmdAndPrint(exec.Command(
-		CmdBitcoinCli, CmdParamRegtest, "dumpprivkey", addr,
-	))
-	//TODO validate privKey
-	return cmdPrint, nil
 }

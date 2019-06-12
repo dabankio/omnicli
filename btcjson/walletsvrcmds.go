@@ -600,10 +600,21 @@ type RawTxInput struct {
 
 // SignRawTransactionCmd defines the signrawtransaction JSON-RPC command.
 type SignRawTransactionCmd struct {
-	RawTx    string
-	Inputs   *[]RawTxInput
-	PrivKeys *[]string
-	Flags    *string `jsonrpcdefault:"\"ALL\""`
+	RawTx       string
+	Inputs      *[]RawTxInput
+	PrivKeys    *[]string
+	Prevtxs     []PreviousDependentTxOutput
+	Flags       *string `jsonrpcdefault:"\"ALL\""`
+	Sighashtype *string
+}
+
+type PreviousDependentTxOutput struct {
+	TxID          string  `json:"txid"`                    // "hex",             (string, required) The transaction id
+	Vout          uint32  `json:"vout"`                    // n,                 (numeric, required) The output number
+	ScriptPubKey  string  `json:"scriptPubKey"`            // "hex",     (string, required) script key
+	RedeemScript  string  `json:"redeemScript,omitempty"`  // "hex",     (string) (required for P2SH) redeem script
+	WitnessScript string  `json:"witnessScript,omitempty"` // "hex",    (string) (required for P2WSH or P2SH-P2WSH) witness script
+	Amount        float64 `json:"amount"`                  // amount,          (numeric or string, required) The amount spent
 }
 
 // NewSignRawTransactionCmd returns a new instance which can be used to issue a
@@ -698,7 +709,7 @@ func init() {
 	MustRegisterCmd("setaccount", (*SetAccountCmd)(nil), flags)
 	MustRegisterCmd("settxfee", (*SetTxFeeCmd)(nil), flags)
 	MustRegisterCmd("signmessage", (*SignMessageCmd)(nil), flags)
-	MustRegisterCmd("signrawtransaction", (*SignRawTransactionCmd)(nil), flags)
+	// MustRegisterCmd("signrawtransaction", (*SignRawTransactionCmd)(nil), flags)
 	MustRegisterCmd("walletlock", (*WalletLockCmd)(nil), flags)
 	MustRegisterCmd("walletpassphrase", (*WalletPassphraseCmd)(nil), flags)
 	MustRegisterCmd("walletpassphrasechange", (*WalletPassphraseChangeCmd)(nil), flags)

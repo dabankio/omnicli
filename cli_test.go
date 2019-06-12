@@ -3,33 +3,277 @@ package btccli
 import (
 	"fmt"
 	"testing"
+
+	"github.com/lemon-sunxiansong/btccli/btcjson"
 )
 
+/// TextTx createRawTx, signTx, sendTx
 func TestSimpleTx(t *testing.T) {
-	PrintCmdOut = false
-
-	closeChan, err := BitcoindRegtest()
-	trueThenFailNow(t, err != nil, "Failed to start bitcoind", err)
+	cc, err := BitcoindRegtest()
+	trueThenFailNow(t, err != nil, "Failed to start btcd", err)
 	defer func() {
-		closeChan <- struct{}{}
-		fmt.Println("Done")
+		cc <- struct{}{}
 	}()
 
+	var addrs []Addr
+	var zeroAddr, firstAddr Addr
+	{
+		addrs, err = CliToolGetSomeAddrs(5)
+		trueThenFailNow(t, err != nil, "Failed to get new address", err)
+		zeroAddr = addrs[0]
+		firstAddr = addrs[1]
+	}
+	{ //gen 101 to addr
+		_, err := CliGeneratetoaddress(101, zeroAddr.Address, nil)
+		trueThenFailNow(t, err != nil, "Failed to generate to address ", err)
+	}
+	var unspents []btcjson.ListUnspentResult
+	{ // list unspent
+		unspents, err = CliListunspent(0, 999, []string{zeroAddr.Address}, nil, nil)
+		trueThenFailNow(t, err != nil, "Failed to list unspent", err)
+		fmt.Println("unspents", ToJsonIndent(unspents))
+	}
+
+	{ // simple tx, o把btc转给1
+		unspent := unspents[0]
+		//0->1 3.777 btc
+		amount := float64(17)
+		cmd := btcjson.CreateRawTransactionCmd{
+			Inputs: []btcjson.TransactionInput{
+				btcjson.TransactionInput{
+					Txid: unspent.TxID,
+					Vout: unspent.Vout,
+				},
+			},
+			Outputs: []map[string]interface{}{
+				map[string]interface{}{
+					firstAddr.Address: amount,
+				},
+				map[string]interface{}{
+					zeroAddr.Address: unspent.Amount - amount - 0.001,
+				},
+			},
+		}
+		rawHex, err := CliCreaterawtransaction(cmd)
+		trueThenFailNow(t, err != nil, "Failed to create raw tx", err)
+
+		dTx, err := CliDecoderawtransaction(btcjson.DecodeRawTransactionCmd{
+			HexTx: rawHex,
+		})
+		trueThenFailNow(t, err != nil, "Failed to decode raw tx", err)
+		fmt.Println("decoded tx", ToJsonIndent(dTx))
+
+		keys := []string{zeroAddr.Privkey}
+		signRes, err := CliSignrawtransactionwithkey(btcjson.SignRawTransactionCmd{
+			RawTx:    rawHex,
+			PrivKeys: &keys,
+			Prevtxs: []btcjson.PreviousDependentTxOutput{
+				btcjson.PreviousDependentTxOutput{
+					TxID:         unspent.TxID,
+					Vout:         unspent.Vout,
+					ScriptPubKey: unspent.ScriptPubKey,
+					Amount:       unspent.Amount,
+				},
+			},
+		})
+		trueThenFailNow(t, err != nil, "Failed to sign with key raw tx", err)
+		fmt.Println("sign res", ToJsonIndent(signRes))
+
+		decodedTxAfterSign, err := CliDecoderawtransaction(btcjson.DecodeRawTransactionCmd{
+			HexTx: signRes.Hex,
+		})
+		trueThenFailNow(t, err != nil, "Failed to decode raw tx", err)
+		fmt.Println("decodedTxAfterSign tx", ToJsonIndent(decodedTxAfterSign))
+
+		sendRes, err := CliSendrawtransaction(btcjson.SendRawTransactionCmd{
+			HexTx: signRes.Hex,
+		})
+		trueThenFailNow(t, err != nil, "Failed to send raw tx", err)
+		fmt.Println("send res:", sendRes)
+	}
+
+}
+
+func TestMultisigTx(t *testing.T) {
+	cc, err := BitcoindRegtest()
+	trueThenFailNow(t, err != nil, "Failed to start btcd", err)
+	defer func() {
+		cc <- struct{}{}
+	}()
+
+	var addrs []Addr
+	var zeroAddr, firstAddr, secondAddr, thirdAddr, fourthAddr Addr
+	// 0 把钱转给1+2+3多签(2-3)，1+3再转给4
+	{
+		addrs, err = CliToolGetSomeAddrs(5)
+		trueThenFailNow(t, err != nil, "Failed to get new address", err)
+		zeroAddr, firstAddr, secondAddr, thirdAddr, fourthAddr = addrs[0], addrs[1], addrs[2], addrs[3], addrs[4]
+	}
+	{ //gen 101 to addr
+		_, err := CliGeneratetoaddress(101, zeroAddr.Address, nil)
+		trueThenFailNow(t, err != nil, "Failed to generate to address ", err)
+	}
+
 	var (
-		newaddr string
+		// multisigAddres123       string
+		createMultisigAddresRes btcjson.CreateMultiSigResult
+		spentTx                 *btcjson.RawTx
 	)
 
-	{ // getnewaddress
-		newaddr, err = CliGetnewaddress(nil, nil)
-		trueThenFailNow(t, err != nil, "Failed to get new address", err)
+	{ // 创建多签地址
+		createMultisigAddresRes, err = CliCreatemultisig(2, []string{firstAddr.Pubkey, secondAddr.Pubkey, thirdAddr.Pubkey}, nil)
+		trueThenFailNow(t, err != nil, "Failed to create multisig address", err)
+
+		//注意需要导入钱包，否则查不到unspent
+		err = CliImportaddress(btcjson.ImportAddressCmd{
+			Address: createMultisigAddresRes.Address,
+		})
+		trueThenFailNow(t, err != nil, "导入多签地址失败", err)
+	}
+
+	{ // 把0的钱交易给多签地址
+		unspents, err := CliListunspent(0, 999, []string{zeroAddr.Address}, nil, nil)
+		trueThenFailNow(t, err != nil, "Failed to list unspent", err)
+		fmt.Println("unspents", ToJsonIndent(unspents))
+
+		unspent := unspents[0]
+		//0->1 3.777 btc
+		amount := float64(17)
+		cmd := btcjson.CreateRawTransactionCmd{
+			Inputs: []btcjson.TransactionInput{
+				btcjson.TransactionInput{
+					Txid: unspent.TxID,
+					Vout: unspent.Vout,
+				},
+			},
+			Outputs: []map[string]interface{}{
+				map[string]interface{}{
+					createMultisigAddresRes.Address: amount,
+				},
+				map[string]interface{}{
+					zeroAddr.Address: unspent.Amount - amount - 0.001,
+				},
+			},
+		}
+		rawHex, err := CliCreaterawtransaction(cmd)
+		trueThenFailNow(t, err != nil, "Failed to create raw tx", err)
+
+		keys := []string{zeroAddr.Privkey}
+		signRes, err := CliSignrawtransactionwithkey(btcjson.SignRawTransactionCmd{
+			RawTx:    rawHex,
+			PrivKeys: &keys,
+			Prevtxs: []btcjson.PreviousDependentTxOutput{
+				btcjson.PreviousDependentTxOutput{
+					TxID:         unspent.TxID,
+					Vout:         unspent.Vout,
+					ScriptPubKey: unspent.ScriptPubKey,
+					Amount:       unspent.Amount,
+				},
+			},
+		})
+		trueThenFailNow(t, err != nil, "Failed to sign with key raw tx", err)
+		fmt.Println("sign res", ToJsonIndent(signRes))
+
+		sendRes, err := CliSendrawtransaction(btcjson.SendRawTransactionCmd{
+			HexTx: signRes.Hex,
+		})
+		trueThenFailNow(t, err != nil, "Failed to send raw tx", err)
+		fmt.Println("send res:", sendRes)
+
+		// tx, err := CliGettransaction(sendRes, true)
+		spentTx, err = CliGetrawtransaction(btcjson.GetRawTransactionCmd{
+			Txid: sendRes,
+		})
+		trueThenFailNow(t, err != nil, "Failed to get tx", err)
+		fmt.Println("to spent tx(mutisig)", ToJsonIndent(spentTx))
+	}
+
+	{ //生成一个block来确认下刚才的交易
+		_, err = CliGeneratetoaddress(1, zeroAddr.Address, nil)
+		trueThenFailNow(t, err != nil, "Failed to generate to address", err)
+	}
+
+	// {
+	// 	unspents, err := CliListunspent(0, 999, []string{zeroAddr.Address}, btcjson.Bool(true), nil)
+	// 	trueThenFailNow(t, err != nil, "Failed to list unspent", err)
+	// 	fmt.Println("zeroAddr上的UTXO", ToJsonIndent(unspents))
+	// }
+
+	{ //现在多签地址里的钱要转给fourthAddr
+		fmt.Println("收取多签地址转来的前的地址", fourthAddr.Address)
+		unspents, err := CliListunspent(0, 999, []string{createMultisigAddresRes.Address}, btcjson.Bool(true), nil)
+		trueThenFailNow(t, err != nil, "Failed to list unspent", err)
+		fmt.Println("多签地址上的UTXO", ToJsonIndent(unspents))
+
+		// amt, _ := CliGetreceivedbyaddress(createMultisigAddresRes.Address, 0)
+		amt, _ := CliGetreceivedbyaddress(zeroAddr.Address, 0)
+		fmt.Println("Received amt:", amt)
+
+		spentVout := spentTx.Vout[0]
+		amount := float64(9)
+		cmd := btcjson.CreateRawTransactionCmd{
+			Inputs: []btcjson.TransactionInput{
+				btcjson.TransactionInput{
+					Txid: spentTx.Txid,
+					Vout: spentVout.N,
+				},
+			},
+			Outputs: []map[string]interface{}{
+				map[string]interface{}{
+					fourthAddr.Address: amount,
+				},
+				map[string]interface{}{
+					createMultisigAddresRes.Address: spentVout.Value - amount - 0.001,
+				},
+			},
+		}
+		rawHex, err := CliCreaterawtransaction(cmd)
+		trueThenFailNow(t, err != nil, "Failed to create raw tx", err)
+
+		// for _, ke := range []string{firstAddr.Privkey} {
+		for _, ke := range []string{firstAddr.Privkey, thirdAddr.Privkey} {
+			keys := []string{ke}
+			signRes, err := CliSignrawtransactionwithkey(btcjson.SignRawTransactionCmd{
+				RawTx:    rawHex,
+				PrivKeys: &keys,
+				Prevtxs: []btcjson.PreviousDependentTxOutput{
+					btcjson.PreviousDependentTxOutput{
+						TxID:         spentTx.Txid,
+						Vout:         spentVout.N,
+						ScriptPubKey: spentVout.ScriptPubKey.Hex,
+						Amount:       spentVout.Value,
+						RedeemScript: createMultisigAddresRes.RedeemScript,
+					},
+				},
+			})
+			rawHex = signRes.Hex
+			trueThenFailNow(t, err != nil, "Failed to sign with key raw tx", err)
+			fmt.Println("sign res", ToJsonIndent(signRes))
+		}
+
+		sendRes, err := CliSendrawtransaction(btcjson.SendRawTransactionCmd{
+			HexTx: rawHex,
+		})
+		trueThenFailNow(t, err != nil, "Failed to send raw tx", err)
+		fmt.Println("send(multisig) res:", sendRes)
 	}
 
 	{
-		leng := 3
-		hashs, err := CliGeneratetoaddress(uint(leng), newaddr, nil)
-		trueThenFailNow(t, err != nil, "Failed to generate to address", err)
-		trueThenFailNow(t, len(hashs) != leng, "Generated hashs len not as expeted", leng, len(hashs))
+		_, err := CliGeneratetoaddress(1, zeroAddr.Address, nil)
+		trueThenFailNow(t, err != nil, "Failed to send to addr 0", err)
 	}
 
-	scanChain(scanOps{includeGenBlock: true, includeCoinbaseTx: true})
+	{ //列出multisig的unspent
+		unspents, err := CliListunspent(0, 999, []string{createMultisigAddresRes.Address}, nil, nil)
+		trueThenFailNow(t, err != nil, "Failed to list unspent", err)
+		fmt.Println("unspent of multisig", ToJsonIndent(unspents))
+	}
+	{ //最后列出转出的unspent
+		unspents, err := CliListunspent(0, 999, []string{fourthAddr.Address}, nil, nil)
+		trueThenFailNow(t, err != nil, "Failed to list unspent", err)
+		fmt.Println("unspent of 4", ToJsonIndent(unspents))
+	}
+
+	// PrintCmdOut = false
+	// scanChain(scanOps{simpleBlock: true})
 }

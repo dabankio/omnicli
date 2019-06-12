@@ -3,10 +3,11 @@ package btccli
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/lemon-sunxiansong/btccli/btcjson"
 	"os/exec"
 	"strconv"
 	"strings"
+
+	"github.com/lemon-sunxiansong/btccli/btcjson"
 )
 
 func CliGetbestblockhash() (string, error) {
@@ -98,4 +99,34 @@ func CliGettransaction(txid string, includeWatchonly bool) (*btcjson.GetTransact
 	var tx btcjson.GetTransactionResult
 	err := json.Unmarshal([]byte(cmdPrint), &tx)
 	return &tx, err
+}
+
+// CliGetrawtransaction .
+func CliGetrawtransaction(cmd btcjson.GetRawTransactionCmd) (*btcjson.RawTx, error) {
+	args := []string{ //TODO verbose and blockhash process
+		CmdParamRegtest,
+		"getrawtransaction",
+		cmd.Txid,
+		strconv.FormatBool(true),
+	}
+	cmdPrint := cmdAndPrint(exec.Command(
+		CmdBitcoinCli, args...,
+	))
+	var tx btcjson.RawTx
+	err := json.Unmarshal([]byte(cmdPrint), &tx)
+	return &tx, err
+}
+
+// CliGetreceivedbyaddress https://bitcoin.org/en/developer-reference#getreceivedbyaddress
+func CliGetreceivedbyaddress(addr string, minconf int) (string, error) {
+	args := []string{
+		CmdParamRegtest,
+		"getreceivedbyaddress",
+		addr,
+		strconv.Itoa(minconf),
+	}
+	cmdPrint := cmdAndPrint(exec.Command(
+		CmdBitcoinCli, args...,
+	))
+	return cmdPrint, nil
 }

@@ -38,6 +38,11 @@ type ImportAddressCmd struct {
 	Address string
 	Account string
 	Rescan  *bool `jsonrpcdefault:"true"`
+
+	//added
+	Label *string
+	// Rescan bool
+	P2sh bool
 }
 
 // NewImportAddressCmd returns a new instance which can be used to issue an
@@ -99,7 +104,7 @@ func init() {
 
 	MustRegisterCmd("createnewaccount", (*CreateNewAccountCmd)(nil), flags)
 	MustRegisterCmd("dumpwallet", (*DumpWalletCmd)(nil), flags)
-	MustRegisterCmd("importaddress", (*ImportAddressCmd)(nil), flags)
+	// MustRegisterCmd("importaddress", (*ImportAddressCmd)(nil), flags)
 	MustRegisterCmd("importpubkey", (*ImportPubKeyCmd)(nil), flags)
 	MustRegisterCmd("importwallet", (*ImportWalletCmd)(nil), flags)
 	MustRegisterCmd("renameaccount", (*RenameAccountCmd)(nil), flags)

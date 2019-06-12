@@ -2,6 +2,7 @@ package btccli
 
 import (
 	"fmt"
+	"github.com/lemon-sunxiansong/btccli/btcjson"
 	"testing"
 )
 
@@ -24,7 +25,7 @@ func TestCliListunspent(t *testing.T) {
 		trueThenFailNow(t, len(hashs) != leng, "len not equal", leng, hashs)
 	}
 	{
-		unspents, err := CliListunspent(0, 999, []string{newaddr}, true, nil)
+		unspents, err := CliListunspent(0, 999, []string{newaddr}, btcjson.Bool(true), nil)
 		trueThenFailNow(t, err != nil, "Fail on listunspent", err)
 		fmt.Println(jsonStr(unspents))
 	}

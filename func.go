@@ -21,14 +21,17 @@ func ToJsonIndent(i interface{}) string {
 	return string(b)
 }
 
-func toJson(i interface{}) string {
+func ToJson(i interface{}) string {
 	b, _ := json.Marshal(i)
 	return string(b)
 }
 
-func ToJson(i interface{}) string {
-	b, _ := json.Marshal(i)
-	return string(b)
+// IfOrString if flag return s ,or s2
+func IfOrString(flag bool, trueS, falseS string) string {
+	if flag {
+		return trueS
+	}
+	return falseS
 }
 
 func dividePrint(msg string) {

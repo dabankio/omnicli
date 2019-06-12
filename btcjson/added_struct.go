@@ -44,3 +44,15 @@ type RawTx struct {
 	Blocktime     uint64 `json:"blocktime,omitempty"`
 	Time          uint64 `json:"time,omitempty"`
 }
+
+type DecodeRawTransactionResult struct {
+	TxID     string `json:"txid"`     //        (string) The transaction id
+	Hash     string `json:"hash"`     //        (string) The transaction hash (differs from txid for witness transactions)
+	Size     int    `json:"size"`     //             (numeric) The transaction size
+	Vsize    int    `json:"vsize"`    //            (numeric) The virtual transaction size (differs from size for witness transactions)
+	Weight   int    `json:"weight"`   //           (numeric) The transaction's weight (between vsize*4 - 3 and vsize*4)
+	Version  int    `json:"version"`  //          (numeric) The version
+	Locktime int    `json:"locktime"` //       (numeric) The lock time
+	Vin      []Vin  `json:"vin"`
+	Vout     []Vout `json:"vout"`
+}
