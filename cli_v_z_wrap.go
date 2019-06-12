@@ -8,11 +8,14 @@ import (
 
 // ValidateAddressResp .
 type ValidateAddressResp struct {
-	Isvalid      bool   `json:"isvalid,omitempty"`
-	Address      string `json:"address,omitempty"`
-	ScriptPubKey string `json:"scriptPubKey,omitempty"`
-	Isscript     bool   `json:"isscript,omitempty"`
-	Iswitness    bool   `json:"iswitness,omitempty"`
+	Isvalid      bool   `json:"isvalid"`
+	Address      string `json:"address"`
+	ScriptPubKey string `json:"scriptPubKey"`
+	Isscript     bool   `json:"isscript"`
+	Iswitness    bool   `json:"iswitness"`
+
+	WitnessVersion string `json:"witness_version"` // version   (numeric, optional) The version number of the witness program
+	WitnessProgram string `json:"witness_program"` // "hex"     (string, optional) The hex value of the witness program
 }
 
 // CliValidateaddress .

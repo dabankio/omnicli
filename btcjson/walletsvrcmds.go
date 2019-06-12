@@ -9,9 +9,11 @@ package btcjson
 
 // AddMultisigAddressCmd defines the addmutisigaddress JSON-RPC command.
 type AddMultisigAddressCmd struct {
-	NRequired int
-	Keys      []string
-	Account   *string
+	NRequired   int
+	Keys        []string
+	Account     *string
+	Label       *string
+	AddressType *string
 }
 
 // NewAddMultisigAddressCmd returns a new instance which can be used to issue a
@@ -524,6 +526,10 @@ type SendToAddressCmd struct {
 	Amount    float64
 	Comment   *string
 	CommentTo *string
+	// SubtraceFeeFromAmount *bool
+	// ReplaceAble *bool
+	// ConfTarget *int
+	// EstimateMod *string
 }
 
 // NewSendToAddressCmd returns a new instance which can be used to issue a

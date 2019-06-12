@@ -1,36 +1,30 @@
 package btcjson
 
 type GetAddressInfoResp struct {
-	Address             string   `json:"address,omitempty"`
-	ScriptPubKey        string   `json:"scriptPubKey,omitempty"`
-	Ismine              bool     `json:"ismine,omitempty"`
-	Iswatchonly         bool     `json:"iswatchonly,omitempty"`
-	Solvable            bool     `json:"solvable,omitempty"`
-	Desc                string   `json:"desc,omitempty"`
-	Isscript            bool     `json:"isscript,omitempty"`
-	Ischange            bool     `json:"ischange,omitempty"`
-	Iswitness           bool     `json:"iswitness,omitempty"`
-	WitnessProgram      string   `json:"witness_program,omitempty"`
-	Script              string   `json:"script,omitempty"`
-	Hex                 string   `json:"hex,omitempty"`
-	Pubkeys             []string `json:"pubkeys,omitempty"`
-	Pubkey              string   `json:"pubkey,omitempty"`
-	Iscompressed        bool     `json:"iscompressed,omitempty"`
-	Label               string   `json:"label,omitempty"`
-	Hdkeypath           string   `json:"hdkeypath,omitempty"`
-	Hdseedid            string   `json:"hdseedid,omitempty"`
-	Hdmasterfingerprint string   `json:"hdmasterfingerprint,omitempty"`
-	// "witness_version" : version   (numeric, optional) The version number of the witness program
-	// "sigsrequired" : xxxxx        (numeric, optional) Number of signatures required to spend multisig output (only if "script" is "multisig")
-	// "embedded" : {...},           (object, optional) Information about the address embedded in P2SH or P2WSH, if relevant and known. It includes all getaddressinfo output fields for the embedded address, excluding metadata ("timestamp", "hdkeypath", "hdseedid") and relation to the wallet ("ismine", "iswatchonly").
-	// "timestamp" : timestamp,      (number, optional) The creation time of the key if available in seconds since epoch (Jan 1 1970 GMT)
-	// "labels"                      (object) Array of labels associated with the address.
-	//   [
-	// 	{ (json object of label data)
-	// 	  name string
-	// 	  purpose string
-	// 	},...
-	//   ]
+	Address             string                   `json:"address"`
+	ScriptPubKey        string                   `json:"scriptPubKey"`
+	Ismine              bool                     `json:"ismine"`
+	Iswatchonly         bool                     `json:"iswatchonly"`
+	Solvable            bool                     `json:"solvable"`
+	Desc                string                   `json:"desc"`
+	Isscript            bool                     `json:"isscript"`
+	Ischange            bool                     `json:"ischange"`
+	Iswitness           bool                     `json:"iswitness"`
+	WitnessProgram      string                   `json:"witness_program"`
+	Script              string                   `json:"script"`
+	Hex                 string                   `json:"hex"`
+	Pubkeys             []string                 `json:"pubkeys"`
+	Pubkey              string                   `json:"pubkey"`
+	Iscompressed        bool                     `json:"iscompressed"`
+	Label               string                   `json:"label"`
+	Hdkeypath           string                   `json:"hdkeypath"`
+	Hdseedid            string                   `json:"hdseedid"`
+	Hdmasterfingerprint string                   `json:"hdmasterfingerprint"`
+	WitnessVersion      int                      `json:"witness_version"` // : version   (numeric, optional) The version number of the witness program
+	Sigsrequired        uint                     `json:"sigsrequired"`    //        (numeric, optional) Number of signatures required to spend multisig output (only if "script" is "multisig")
+	Embedded            map[string]interface{}   `json:"embedded"`        //,           (object, optional) Information about the address embedded in P2SH or P2WSH, if relevant and known. It includes all getaddressinfo output fields for the embedded address, excluding metadata ("timestamp", "hdkeypath", "hdseedid") and relation to the wallet ("ismine", "iswatchonly").
+	Timestamp           uint64                   `json:"timestamp"`       // : timestamp,      (number, optional) The creation time of the key if available in seconds since epoch (Jan 1 1970 GMT)
+	Labels              []map[string]interface{} `json:"labels"`          //                      (object) Array of labels associated with the address.
 }
 
 type RawTx struct {

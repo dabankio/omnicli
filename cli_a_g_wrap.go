@@ -7,6 +7,25 @@ import (
 	"strconv"
 )
 
+func CliAddmultisigaddress(cmd btcjson.AddMultisigAddressCmd) (btcjson.CreateMultiSigResult, error) {
+	args := []string{
+		CmdParamRegtest, "addmultisigaddress", strconv.Itoa(int(cmd.NRequired)), toJson(cmd.Keys),
+	}
+	if cmd.Label != nil {
+		args = append(args, *cmd.Label)
+
+		if cmd.AddressType != nil {
+			args = append(args, *cmd.AddressType)
+		}
+	}
+
+	cmdPrint := cmdAndPrint(exec.Command(CmdBitcoinCli, args...))
+	//TODO validate address
+	var resp btcjson.CreateMultiSigResult
+	err := json.Unmarshal([]byte(cmdPrint), &resp)
+	return resp, err
+}
+
 // CliCreatemultisig https://bitcoin.org/en/developer-reference#createmultisig
 func CliCreatemultisig(nRequired uint8, keys []string, addressType *string) (btcjson.CreateMultiSigResult, error) {
 	args := []string{
