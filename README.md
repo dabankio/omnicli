@@ -19,6 +19,10 @@ Im developing under macOS and linux, not enough time to deal with windows.
 Notice:
 - Some behaviors may be effected by your local bitcoin.conf.
 
+
+## TODO
+- add PSBT support， https://github.com/bitcoin/bitcoin/blob/master/doc/psbt.md
+
 ## versions
 Im considering keep same as bitcoincore version, currently 0.18.0.
 
