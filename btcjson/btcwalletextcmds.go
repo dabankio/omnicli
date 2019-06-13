@@ -58,6 +58,7 @@ func NewImportAddressCmd(address string, account string, rescan *bool) *ImportAd
 // ImportPubKeyCmd defines the importpubkey JSON-RPC command.
 type ImportPubKeyCmd struct {
 	PubKey string
+	Label  *string
 	Rescan *bool `jsonrpcdefault:"true"`
 }
 

@@ -57,11 +57,12 @@ func TestSimpleTx(t *testing.T) {
 		rawHex, err := CliCreaterawtransaction(cmd)
 		trueThenFailNow(t, err != nil, "Failed to create raw tx", err)
 
-		dTx, err := CliDecoderawtransaction(btcjson.DecodeRawTransactionCmd{
+
+		fmt.Println("Then decode rawHex")
+		_, err = CliDecoderawtransaction(btcjson.DecodeRawTransactionCmd{
 			HexTx: rawHex,
 		})
 		trueThenFailNow(t, err != nil, "Failed to decode raw tx", err)
-		fmt.Println("decoded tx", ToJsonIndent(dTx))
 
 		keys := []string{zeroAddr.Privkey}
 		signRes, err := CliSignrawtransactionwithkey(btcjson.SignRawTransactionCmd{
@@ -77,8 +78,9 @@ func TestSimpleTx(t *testing.T) {
 			},
 		})
 		trueThenFailNow(t, err != nil, "Failed to sign with key raw tx", err)
-		fmt.Println("sign res", ToJsonIndent(signRes))
+		// fmt.Println("sign res", ToJsonIndent(signRes))
 
+		fmt.Println("Then decode rawHex")
 		decodedTxAfterSign, err := CliDecoderawtransaction(btcjson.DecodeRawTransactionCmd{
 			HexTx: signRes.Hex,
 		})
@@ -90,6 +92,15 @@ func TestSimpleTx(t *testing.T) {
 		})
 		trueThenFailNow(t, err != nil, "Failed to send raw tx", err)
 		fmt.Println("send res:", sendRes)
+
+		for _, vout := range decodedTxAfterSign.Vout {
+			if len(vout.ScriptPubKey.Hex) == 0 {
+				continue
+			}
+			decodeScript, err := CliDecodescript(vout.ScriptPubKey.Hex)
+			trueThenFailNow(t, err != nil, "Failed to decode scriptPubkey", err)
+			fmt.Println("vout:", ToJsonIndent(vout), "scriptPubkey decode:", ToJsonIndent(decodeScript))
+		}
 	}
 
 }
@@ -129,12 +140,16 @@ func TestMultisigTx(t *testing.T) {
 			Address: createMultisigAddresRes.Address,
 		})
 		trueThenFailNow(t, err != nil, "导入多签地址失败", err)
+
+		_, err := CliDecodescript(createMultisigAddresRes.RedeemScript)
+		trueThenFailNow(t, err != nil, "Failed to decode script", err)
+		// fmt.Println("decoded redeemScript:", ToJsonIndent(decodeScript))
 	}
 
 	{ // 把0的钱交易给多签地址
 		unspents, err := CliListunspent(0, 999, []string{zeroAddr.Address}, nil, nil)
 		trueThenFailNow(t, err != nil, "Failed to list unspent", err)
-		fmt.Println("unspents", ToJsonIndent(unspents))
+		// fmt.Println("unspents", ToJsonIndent(unspents))
 
 		unspent := unspents[0]
 		//0->1 3.777 btc
@@ -172,20 +187,20 @@ func TestMultisigTx(t *testing.T) {
 			},
 		})
 		trueThenFailNow(t, err != nil, "Failed to sign with key raw tx", err)
-		fmt.Println("sign res", ToJsonIndent(signRes))
+		// fmt.Println("sign res", ToJsonIndent(signRes))
 
 		sendRes, err := CliSendrawtransaction(btcjson.SendRawTransactionCmd{
 			HexTx: signRes.Hex,
 		})
 		trueThenFailNow(t, err != nil, "Failed to send raw tx", err)
-		fmt.Println("send res:", sendRes)
+		// fmt.Println("send res:", sendRes)
 
 		// tx, err := CliGettransaction(sendRes, true)
 		spentTx, err = CliGetrawtransaction(btcjson.GetRawTransactionCmd{
 			Txid: sendRes,
 		})
 		trueThenFailNow(t, err != nil, "Failed to get tx", err)
-		fmt.Println("to spent tx(mutisig)", ToJsonIndent(spentTx))
+		// fmt.Println("to spent tx(mutisig)", ToJsonIndent(spentTx))
 	}
 
 	{ //生成一个block来确认下刚才的交易
@@ -231,7 +246,7 @@ func TestMultisigTx(t *testing.T) {
 		trueThenFailNow(t, err != nil, "Failed to create raw tx", err)
 
 		// for _, ke := range []string{firstAddr.Privkey} {
-		for _, ke := range []string{firstAddr.Privkey, thirdAddr.Privkey} {
+		for i, ke := range []string{firstAddr.Privkey, thirdAddr.Privkey} {
 			keys := []string{ke}
 			signRes, err := CliSignrawtransactionwithkey(btcjson.SignRawTransactionCmd{
 				RawTx:    rawHex,
@@ -249,6 +264,10 @@ func TestMultisigTx(t *testing.T) {
 			rawHex = signRes.Hex
 			trueThenFailNow(t, err != nil, "Failed to sign with key raw tx", err)
 			fmt.Println("sign res", ToJsonIndent(signRes))
+
+			fmt.Printf("第 %d 次多签后的rawTx\n", i)
+			_, err = CliDecoderawtransaction(btcjson.DecodeRawTransactionCmd{HexTx: rawHex})
+			trueThenFailNow(t, err != nil, "Failed to decode tx hex", err)
 		}
 
 		sendRes, err := CliSendrawtransaction(btcjson.SendRawTransactionCmd{
