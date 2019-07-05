@@ -1,9 +1,17 @@
 package btccli
 
+import (
+	"fmt"
+)
+
 type Addr struct {
 	Address string
 	Privkey string
 	Pubkey  string
+}
+
+func (ad *Addr) String() string {
+	return fmt.Sprintf("{Address: \"%s\", Privkey: \"%s\", Pubkey: \"%s\"}", ad.Address, ad.Privkey, ad.Pubkey)
 }
 
 // CliToolGetSomeAddrs 一次获取n个地址（包含pub-priv key)

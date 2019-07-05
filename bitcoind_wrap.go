@@ -21,9 +21,12 @@ func BitcoindRegtest() (closeChan chan struct{}, err error) {
 	//233
 	cmd := exec.Command(CmdBitcoind,
 		"-regtest",
+		// "-testnet",
 		// "-deprecatedrpc=generate",
 		"-txindex",
 		"-rpcauth=rpcusr:656f9dabc62f0eb697c801369617dc60$422d7fca742d4a59460f941dc9247c782558367edcbf1cd790b2b7ff5624fc1b",
+		// "-addresstype=bech32",
+		"-rpcport=18443",
 	)
 	fmt.Println(cmd.Args)
 	err = cmd.Start()

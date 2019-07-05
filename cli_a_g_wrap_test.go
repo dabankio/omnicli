@@ -17,7 +17,7 @@ func TestCliCreatemultisig(t *testing.T) {
 	type addrinfo struct {
 		addr, privkey, pubkey string
 	}
-	var addrs [5]addrinfo
+	var addrs [3]addrinfo
 	{ //获取几个新地址
 		for i := 0; i < len(addrs); i++ {
 			add, err := CliGetnewaddress(nil, nil)
@@ -40,9 +40,11 @@ func TestCliCreatemultisig(t *testing.T) {
 		var keys []string
 		for _, info := range addrs {
 			keys = append(keys, info.pubkey)
+			// keys = append(keys, info.addr)
 		}
-		multisigResp, err = CliCreatemultisig(4, keys, nil)
+		multisigResp, err = CliCreatemultisig(2, keys, nil)
 		trueThenFailNow(t, err != nil, "Failed to create multi sig", err)
+		fmt.Println("keys", keys)
 		fmt.Println("multisig address:", jsonStr(multisigResp))
 	}
 

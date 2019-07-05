@@ -108,6 +108,10 @@ func TestMultisigTx(t *testing.T) {
 		addrs, err = CliToolGetSomeAddrs(5)
 		trueThenFailNow(t, err != nil, "Failed to get new address", err)
 		zeroAddr, firstAddr, secondAddr, thirdAddr, fourthAddr = addrs[0], addrs[1], addrs[2], addrs[3], addrs[4]
+		fmt.Println("addrs")
+		for _, a := range addrs {
+			fmt.Printf("%s,\n", a.String())
+		}
 	}
 	{ //gen 101 to addr
 		_, err := CliGeneratetoaddress(101, zeroAddr.Address, nil)
@@ -123,6 +127,7 @@ func TestMultisigTx(t *testing.T) {
 	{ // 创建多签地址
 		createMultisigAddresRes, err = CliCreatemultisig(2, []string{firstAddr.Pubkey, secondAddr.Pubkey, thirdAddr.Pubkey}, nil)
 		trueThenFailNow(t, err != nil, "Failed to create multisig address", err)
+		fmt.Println("生成多签地址的结果", ToJsonIndent(createMultisigAddresRes))
 
 		//注意需要导入钱包，否则查不到unspent
 		err = CliImportaddress(btcjson.ImportAddressCmd{
@@ -229,9 +234,15 @@ func TestMultisigTx(t *testing.T) {
 		}
 		rawHex, err := CliCreaterawtransaction(cmd)
 		trueThenFailNow(t, err != nil, "Failed to create raw tx", err)
+		dTx, err := CliDecoderawtransaction(btcjson.DecodeRawTransactionCmd{
+			HexTx: rawHex,
+		})
+		trueThenFailNow(t, err != nil, "Failed to decode rawHex", err)
+		fmt.Println("创建的多签raw tx", ToJsonIndent(dTx))
 
 		// for _, ke := range []string{firstAddr.Privkey} {
-		for _, ke := range []string{firstAddr.Privkey, thirdAddr.Privkey} {
+		// for i, ke := range []string{firstAddr.Privkey, thirdAddr.Privkey} {
+		for i, ke := range []string{thirdAddr.Privkey, firstAddr.Privkey} {
 			keys := []string{ke}
 			signRes, err := CliSignrawtransactionwithkey(btcjson.SignRawTransactionCmd{
 				RawTx:    rawHex,
@@ -248,14 +259,25 @@ func TestMultisigTx(t *testing.T) {
 			})
 			rawHex = signRes.Hex
 			trueThenFailNow(t, err != nil, "Failed to sign with key raw tx", err)
-			fmt.Println("sign res", ToJsonIndent(signRes))
+			fmt.Println("第n次签名的结果", i, ToJsonIndent(signRes))
+			deTx, err := CliDecoderawtransaction(btcjson.DecodeRawTransactionCmd{
+				HexTx: rawHex,
+			})
+			trueThenFailNow(t, err != nil, "Failed to decode raw tx in multisig", err)
+			fmt.Println("第n次签名后对rawTx的解码", i, ToJsonIndent(deTx))
 		}
 
-		sendRes, err := CliSendrawtransaction(btcjson.SendRawTransactionCmd{
+		multisigTxid, err := CliSendrawtransaction(btcjson.SendRawTransactionCmd{
 			HexTx: rawHex,
 		})
 		trueThenFailNow(t, err != nil, "Failed to send raw tx", err)
-		fmt.Println("send(multisig) res:", sendRes)
+		fmt.Println("send(multisig) res:", multisigTxid)
+		mtx, err := CliGetrawtransaction(btcjson.GetRawTransactionCmd{
+			Txid:    multisigTxid,
+			Verbose: btcjson.Int(1),
+		})
+		trueThenFailNow(t, err != nil, "Failed to get raw multisig tx", err)
+		fmt.Println("raw multisig tx", ToJsonIndent(mtx))
 	}
 
 	{
