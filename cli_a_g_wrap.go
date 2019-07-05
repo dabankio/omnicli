@@ -75,6 +75,19 @@ func CliDecoderawtransaction(cmd btcjson.DecodeRawTransactionCmd) (*btcjson.Deco
 	return &res, err
 }
 
+// CliDecodescript https://bitcoin.org/en/developer-reference#decodescript
+func CliDecodescript(hex string) (btcjson.DecodeScriptResult, error) {
+	args := []string{
+		CmdParamRegtest, "decodescript", hex,
+	}
+	cmdPrint := cmdAndPrint(exec.Command(
+		CmdBitcoinCli, args...,
+	))
+	var res btcjson.DecodeScriptResult
+	err := json.Unmarshal([]byte(cmdPrint), &res)
+	return res, err
+}
+
 // CliDumpprivkey https://bitcoin.org/en/developer-reference#dumpprivkey
 func CliDumpprivkey(addr string) (string, error) {
 	cmdPrint := cmdAndPrint(exec.Command(
