@@ -2,28 +2,21 @@ package btccli
 
 import (
 	"testing"
+
+	"github.com/lemon-sunxiansong/btccli/testtool"
 )
 
 func TestBitcoindRegtest(t *testing.T) {
 	closeChan, err := BitcoindRegtest()
-	if err != nil {
-		t.Fatal(err)
-	}
+	testtool.FailOnErr(t, err, "bitcoind start err")
 	defer func() {
 		closeChan <- struct{}{}
-
-		if cmdIsPortContainsNameRunning(RPCPortRegtest, "bitcoin") {
-			t.Fatal("bitcoind should be stoped")
-		}
+		testtool.FailOnFlag(t, cmdIsPortContainsNameRunning(RPCPortRegtest, "bitcoin"), "bitcoind should be stoped")
 		t.Log("Done")
 	}()
 
-	if !cmdIsPortContainsNameRunning(RPCPortRegtest, "bitcoin") {
-		t.Fatal("port not running error")
-	}
+	testtool.FailOnFlag(t, !cmdIsPortContainsNameRunning(RPCPortRegtest, "bitcoin"), "端口现在应该已经运行")
 
 	_, err = BitcoindRegtest()
-	if err == nil {
-		t.Fatal("再次运行应该返回错误")
-	}
+	testtool.FailOnFlag(t, err == nil, "再次运行应该返回错误")
 }

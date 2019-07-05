@@ -51,6 +51,7 @@ func cmdThenPrint(cmd *exec.Cmd, print bool) string {
 func cmdIsPortContainsNameRunning(port uint, name string) bool {
 	if strings.Contains(runtime.GOOS, "linux") {
 		checkPortCmd := exec.Command("netstat", "-ntpl")
+		
 		cmdPrint := cmdAndPrint(checkPortCmd)
 		if strings.Contains(cmdPrint, strconv.Itoa(int(port))) && strings.Contains(cmdPrint, name) {
 			return true
