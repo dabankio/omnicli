@@ -615,6 +615,7 @@ type PreviousDependentTxOutput struct {
 	RedeemScript  string  `json:"redeemScript,omitempty"`  // "hex",     (string) (required for P2SH) redeem script
 	WitnessScript string  `json:"witnessScript,omitempty"` // "hex",    (string) (required for P2WSH or P2SH-P2WSH) witness script
 	Amount        float64 `json:"amount"`                  // amount,          (numeric or string, required) The amount spent
+	Value         float64 `json:"value,omitempty"`
 }
 
 // NewSignRawTransactionCmd returns a new instance which can be used to issue a

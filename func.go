@@ -3,6 +3,7 @@ package btccli
 import (
 	"encoding/json"
 	"fmt"
+	"strings"
 )
 
 func panicIf(e error, msg string) {
@@ -32,6 +33,22 @@ func IfOrString(flag bool, trueS, falseS string) string {
 		return trueS
 	}
 	return falseS
+}
+
+// ToError 如果含有error字样，则视为error
+func ToError(str string) error {
+	if strings.Contains(str, "error") {
+		return fmt.Errorf("%s", str)
+	}
+	return nil
+}
+
+// WrapJSONDecodeError include raw json in error
+func WrapJSONDecodeError(e error, rawJSON string) error {
+	if e == nil {
+		return nil
+	}
+	return fmt.Errorf("Decode json error: %v, json:\n%s", e, rawJSON)
 }
 
 func dividePrint(msg string) {

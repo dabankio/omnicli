@@ -57,7 +57,7 @@ type CreateRawTransactionCmd struct {
 	Inputs   []TransactionInput
 	Amounts  map[string]float64 `jsonrpcusage:"{\"address\":amount,...}"` // In BTC
 	LockTime *int64
-	Outputs  []map[string]interface{}
+	Outputs  map[string]interface{}
 }
 
 // NewCreateRawTransactionCmd returns a new instance which can be used to issue

@@ -8,18 +8,22 @@ import (
 // bitcoin bin path
 var (
 	BasePath      = "/Users/some_user/Applications/bitcoin/bin" //see init()
-	CmdBitcoind   = BasePath + "/bitcoind"
-	CmdBitcoinCli = BasePath + "/bitcoin-cli"
+	CmdOmnicored  = BasePath + "/omnicored"
+	CmdBitcoinCli = BasePath + "/omnicore-cli"
 )
 
 func init() {
-	p := os.Getenv(BitcoinBinPathEnv)
+	fmt.Println("--init start---")
+	defer fmt.Println("--init end---")
+
+	fmt.Println(":Read env OMNI_BIN_PATH to configure command path")
+	p := os.Getenv(OmniBinPathEnv)
 	if p == "" {
-		panic("使用bitcoin需要bin path env: BITCOIN_BIN_PATH")
+		panic("使用omni需要bin path env: OMNI_BIN_PATH")
 	}
 	BasePath = p
-	fmt.Println("bitcoin bin path:", BasePath)
-	CmdBitcoind = BasePath + "/bitcoind"      //windows may need change suffix
-	CmdBitcoinCli = BasePath + "/bitcoin-cli" //windows may need change suffix
+	fmt.Println(":omni bin path:", BasePath)
+	CmdOmnicored = BasePath + "/omnicored"     //windows may need change suffix
+	CmdBitcoinCli = BasePath + "/omnicore-cli" //windows may need change suffix
 
 }

@@ -18,22 +18,26 @@ func CliGetbestblockhash() (string, error) {
 	return cmdPrint, nil
 }
 
-func CliGetAddressInfo(addr string) (*btcjson.GetAddressInfoResp, error) {
-	cmdPrint := cmdAndPrint(exec.Command(
-		CmdBitcoinCli, CmdParamRegtest, "getaddressinfo", addr,
-	))
-	var resp btcjson.GetAddressInfoResp
-	err := json.Unmarshal([]byte(cmdPrint), &resp)
-	return &resp, err
-}
+// Not support
+// func CliGetAddressInfo(addr string) (*btcjson.GetAddressInfoResp, error) {
+// 	cmdPrint := cmdAndPrint(exec.Command(
+// 		CmdBitcoinCli, basicParamsWith("getaddressinfo", addr,)...
+// 	))
+// 	var resp btcjson.GetAddressInfoResp
+// 	err := json.Unmarshal([]byte(cmdPrint), &resp)
+// 	if err != nil {
+// 		err = fmt.Errorf("json encode err, %v, print: \n %s", err, cmdPrint)
+// 	}
+// 	return &resp, err
+// }
 
-func CliGetWalletInfo() map[string]interface{} {
+func CliGetWalletInfo() (map[string]interface{}, error) {
 	cmdPrint := cmdAndPrint(exec.Command(
-		CmdBitcoinCli, CmdParamRegtest, "getwalletinfo",
+		CmdBitcoinCli, basicParamsWith("getwalletinfo")...,
 	))
 	var info map[string]interface{}
-	json.Unmarshal([]byte(cmdPrint), &info)
-	return info
+	err := json.Unmarshal([]byte(cmdPrint), &info)
+	return info, err
 }
 
 func CliGetblockcount() (int, error) {
@@ -82,7 +86,7 @@ func CliGetnewaddress(labelPtr, addressTypePtr *string) (hexedAddress string, er
 	if labelPtr != nil {
 		label = *labelPtr
 	}
-	args := []string{CmdParamRegtest, "getnewaddress", label}
+	args := basicParamsWith("getnewaddress", label)
 	if addressTypePtr != nil {
 		args = append(args, *addressTypePtr)
 	}

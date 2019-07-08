@@ -1,14 +1,13 @@
 package btccli
 
 import (
-	"github.com/lemon-sunxiansong/btccli/testtool"
 	"fmt"
-	"github.com/lemon-sunxiansong/btccli/btcjson"
+	"github.com/lemon-sunxiansong/btccli/testtool"
 	"testing"
 )
 
 func TestCliListunspent(t *testing.T) {
-	closeChan, err := BitcoindRegtest()
+	closeChan, err := StartOmnicored()
 	testtool.FailOnFlag(t, err != nil, "Failed to start d", err)
 	defer func() {
 		closeChan <- struct{}{}
@@ -26,7 +25,7 @@ func TestCliListunspent(t *testing.T) {
 		testtool.FailOnFlag(t, len(hashs) != leng, "len not equal", leng, hashs)
 	}
 	{
-		unspents, err := CliListunspent(0, 999, []string{newaddr}, btcjson.Bool(true), nil)
+		unspents, err := CliListunspent(0, 999, []string{newaddr})
 		testtool.FailOnFlag(t, err != nil, "Fail on listunspent", err)
 		fmt.Println(jsonStr(unspents))
 	}

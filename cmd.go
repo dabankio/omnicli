@@ -51,7 +51,7 @@ func cmdThenPrint(cmd *exec.Cmd, print bool) string {
 func cmdIsPortContainsNameRunning(port uint, name string) bool {
 	if strings.Contains(runtime.GOOS, "linux") {
 		checkPortCmd := exec.Command("netstat", "-ntpl")
-		
+
 		cmdPrint := cmdAndPrint(checkPortCmd)
 		if strings.Contains(cmdPrint, strconv.Itoa(int(port))) && strings.Contains(cmdPrint, name) {
 			return true
@@ -60,11 +60,17 @@ func cmdIsPortContainsNameRunning(port uint, name string) bool {
 	} else if strings.Contains(runtime.GOOS, "darwin") {
 		checkPortCmd := exec.Command("lsof", "-i", "tcp:18443")
 		cmdPrint := cmdAndPrint(checkPortCmd)
-		if strings.Contains(cmdPrint, strconv.Itoa(int(port))) && strings.Contains(cmdPrint, "bitcoin") {
+		if strings.Contains(cmdPrint, strconv.Itoa(int(port))) && strings.Contains(cmdPrint, "omnicored") {
 			return true
 		}
 		return false
 	} else {
 		panic("其他平台尚未實現")
 	}
+}
+
+var basicParams = []string{CmdParamRegtest, "-rpcuser=rpcusr", "-rpcpassword=233", "-rpcport=18443"}
+
+func basicParamsWith(params ...string) []string {
+	return append(basicParams, params...)
 }

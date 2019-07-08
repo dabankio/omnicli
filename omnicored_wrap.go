@@ -6,8 +6,9 @@ import (
 	"time"
 )
 
-// BitcoindRegtest 启动bitcoind -regtest 用以测试,
-func BitcoindRegtest() (closeChan chan struct{}, err error) {
+// StartOmnicored 启动bitcoind -regtest 用以测试.
+// return close channel (cc)
+func StartOmnicored() (closeChan chan struct{}, err error) {
 	if cmdIsPortContainsNameRunning(RPCPortRegtest, "bitcoin") {
 		return nil, fmt.Errorf("bitcoind 似乎已经运行在18443端口了,不先杀掉的话数据可能有问题")
 	}
@@ -19,14 +20,14 @@ func BitcoindRegtest() (closeChan chan struct{}, err error) {
 	//rpcauth=rpcusr:656f9dabc62f0eb697c801369617dc60$422d7fca742d4a59460f941dc9247c782558367edcbf1cd790b2b7ff5624fc1b
 	//Your password:
 	//233
-	cmd := exec.Command(CmdBitcoind,
+	cmd := exec.Command(CmdOmnicored,
 		"-regtest",
 		// "-testnet",
 		// "-deprecatedrpc=generate",
 		"-txindex",
-		"-rpcauth=rpcusr:656f9dabc62f0eb697c801369617dc60$422d7fca742d4a59460f941dc9247c782558367edcbf1cd790b2b7ff5624fc1b",
-		// "-addresstype=bech32",
 		"-rpcport=18443",
+		"-rpcuser=rpcusr",
+		"-rpcpassword=233",
 	)
 	fmt.Println(cmd.Args)
 	err = cmd.Start()

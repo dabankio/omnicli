@@ -1,15 +1,15 @@
 package btccli
 
 import (
-	"github.com/lemon-sunxiansong/btccli/testtool"
 	"fmt"
+	"github.com/lemon-sunxiansong/btccli/testtool"
 	"testing"
 
 	"github.com/lemon-sunxiansong/btccli/btcjson"
 )
 
 func TestCliCreatemultisig(t *testing.T) {
-	closeChan, err := BitcoindRegtest()
+	closeChan, err := StartOmnicored()
 	testtool.FailOnFlag(t, err != nil, "Failed to start btcd", err)
 	defer func() {
 		closeChan <- struct{}{}
@@ -24,10 +24,6 @@ func TestCliCreatemultisig(t *testing.T) {
 			add, err := CliGetnewaddress(nil, nil)
 			testtool.FailOnFlag(t, err != nil, "Failed to get new address", err)
 			addrs[i] = addrinfo{addr: add}
-
-			info, err := CliGetAddressInfo(add)
-			testtool.FailOnFlag(t, err != nil, "Failed to get address info", err)
-			addrs[i].pubkey = info.Pubkey
 
 			privkey, err := CliDumpprivkey(add)
 			testtool.FailOnFlag(t, err != nil, "Failed to dump privkey", err)
@@ -50,11 +46,6 @@ func TestCliCreatemultisig(t *testing.T) {
 	}
 
 	{
-		info, err := CliGetAddressInfo(multisigResp.Address)
-		testtool.FailOnFlag(t, err != nil, "Failed to get address info", err)
-		fmt.Println("multisigAddres info", ToJsonIndent(info))
-	}
-	{
 		vRes, err := CliValidateaddress(multisigResp.Address)
 		testtool.FailOnFlag(t, err != nil, "Failed to validate address info", err)
 		fmt.Println("validate multisig address", ToJsonIndent(vRes))
@@ -63,7 +54,7 @@ func TestCliCreatemultisig(t *testing.T) {
 }
 
 func TestCliAddmultisigaddress(t *testing.T) {
-	closeChan, err := BitcoindRegtest()
+	closeChan, err := StartOmnicored()
 	testtool.FailOnFlag(t, err != nil, "Failed to start btcd", err)
 	defer func() {
 		closeChan <- struct{}{}
@@ -78,10 +69,6 @@ func TestCliAddmultisigaddress(t *testing.T) {
 			add, err := CliGetnewaddress(nil, nil)
 			testtool.FailOnFlag(t, err != nil, "Failed to get new address", err)
 			addrs[i] = addrinfo{addr: add}
-
-			info, err := CliGetAddressInfo(add)
-			testtool.FailOnFlag(t, err != nil, "Failed to get address info", err)
-			addrs[i].pubkey = info.Pubkey
 
 			privkey, err := CliDumpprivkey(add)
 			testtool.FailOnFlag(t, err != nil, "Failed to dump privkey", err)
@@ -104,9 +91,4 @@ func TestCliAddmultisigaddress(t *testing.T) {
 		fmt.Println("multisig address:", jsonStr(multisigResp))
 	}
 
-	{
-		info, err := CliGetAddressInfo(multisigResp.Address)
-		testtool.FailOnFlag(t, err != nil, "Failed to get address info", err)
-		fmt.Println("multisigAddres info", ToJsonIndent(info))
-	}
 }

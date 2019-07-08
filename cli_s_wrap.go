@@ -36,11 +36,10 @@ func CliSendtoaddress(cmd *btcjson.SendToAddressCmd) (string, error) {
 
 // CliSendrawtransaction https://bitcoin.org/en/developer-reference#sendrawtransaction
 func CliSendrawtransaction(cmd btcjson.SendRawTransactionCmd) (string, error) {
-	args := []string{
-		CmdParamRegtest,
+	args := basicParamsWith(
 		"sendrawtransaction",
 		cmd.HexTx,
-	}
+	)
 	if cmd.AllowHighFees != nil {
 		args = append(args, strconv.FormatBool(*cmd.AllowHighFees))
 	}
@@ -51,15 +50,14 @@ func CliSendrawtransaction(cmd btcjson.SendRawTransactionCmd) (string, error) {
 	return cmdPrint, nil
 }
 
-// CliSignrawtransactionwithkey https://bitcoin.org/en/developer-reference#signrawtransactionwithkey
+// CliSignrawtransactionwithkey [Disabled in omni current version] https://bitcoin.org/en/developer-reference#signrawtransactionwithkey
 func CliSignrawtransactionwithkey(cmd btcjson.SignRawTransactionCmd) (btcjson.SignRawTransactionResult, error) {
-	args := []string{
-		CmdParamRegtest,
+	args := basicParamsWith(
 		"signrawtransactionwithkey",
 		cmd.RawTx,
 		ToJson(cmd.PrivKeys),
 		IfOrString(len(cmd.Prevtxs) > 0, ToJson(cmd.Prevtxs), ""),
-	}
+	)
 	if cmd.Sighashtype != nil {
 		args = append(args, *cmd.Sighashtype)
 	}
@@ -68,5 +66,24 @@ func CliSignrawtransactionwithkey(cmd btcjson.SignRawTransactionCmd) (btcjson.Si
 	))
 	var res btcjson.SignRawTransactionResult
 	err := json.Unmarshal([]byte(cmdPrint), &res)
-	return res, err
+	return res, WrapJSONDecodeError(err, cmdPrint)
+}
+
+// CliSignrawtransaction .
+func CliSignrawtransaction(cmd btcjson.SignRawTransactionCmd) (btcjson.SignRawTransactionResult, error) {
+	args := basicParamsWith(
+		"signrawtransaction",
+		cmd.RawTx,
+		IfOrString(len(cmd.Prevtxs) > 0, ToJson(cmd.Prevtxs), ""),
+		ToJson(cmd.PrivKeys),
+	)
+	if cmd.Sighashtype != nil {
+		args = append(args, *cmd.Sighashtype)
+	}
+	cmdPrint := cmdAndPrint(exec.Command(
+		CmdBitcoinCli, args...,
+	))
+	var res btcjson.SignRawTransactionResult
+	err := json.Unmarshal([]byte(cmdPrint), &res)
+	return res, WrapJSONDecodeError(err, cmdPrint)
 }
