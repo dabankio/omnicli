@@ -92,7 +92,7 @@ func CliGetnewaddress(labelPtr, addressTypePtr *string) (hexedAddress string, er
 	}
 	cmdPrint := cmdAndPrint(exec.Command(CmdBitcoinCli, args...))
 	//TODO validate address
-	return cmdPrint, nil
+	return cmdPrint, ToError(cmdPrint)
 }
 
 // CliGettransaction https://bitcoin.org/en/developer-reference#gettransaction
@@ -123,14 +123,13 @@ func CliGetrawtransaction(cmd btcjson.GetRawTransactionCmd) (*btcjson.RawTx, err
 
 // CliGetreceivedbyaddress https://bitcoin.org/en/developer-reference#getreceivedbyaddress
 func CliGetreceivedbyaddress(addr string, minconf int) (string, error) {
-	args := []string{
-		CmdParamRegtest,
+	args := basicParamsWith(
 		"getreceivedbyaddress",
 		addr,
 		strconv.Itoa(minconf),
-	}
+	)
 	cmdPrint := cmdAndPrint(exec.Command(
 		CmdBitcoinCli, args...,
 	))
-	return cmdPrint, nil
+	return cmdPrint, ToError(cmdPrint)
 }

@@ -9,12 +9,11 @@ import (
 
 // CliSendtoaddress https://bitcoin.org/en/developer-reference#sendtoaddress
 func CliSendtoaddress(cmd *btcjson.SendToAddressCmd) (string, error) {
-	args := []string{
-		CmdParamRegtest,
+	args := basicParamsWith(
 		"sendtoaddress",
 		cmd.Address,
 		strconv.FormatFloat(cmd.Amount, 'f', 6, 64),
-	}
+	)
 	if cmd.Comment != nil {
 		args = append(args, *cmd.Comment)
 	} else {
@@ -31,7 +30,7 @@ func CliSendtoaddress(cmd *btcjson.SendToAddressCmd) (string, error) {
 		CmdBitcoinCli, args...,
 	))
 	//TODO validate hex
-	return cmdPrint, nil
+	return cmdPrint, ToError(cmdPrint)
 }
 
 // CliSendrawtransaction https://bitcoin.org/en/developer-reference#sendrawtransaction

@@ -90,7 +90,7 @@ func CliDumpprivkey(addr string) (string, error) {
 		CmdBitcoinCli, basicParamsWith("dumpprivkey", addr)...,
 	))
 	//TODO validate privKey
-	return cmdPrint, nil
+	return cmdPrint, ToError(cmdPrint)
 }
 
 // CliGeneratetoaddress https://bitcoin.org/en/developer-reference#generatetoaddress

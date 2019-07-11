@@ -28,26 +28,26 @@ func StartOmnicored() (closeChan chan struct{}, err error) {
 		"-rpcport=18443",
 		"-rpcuser=rpcusr",
 		"-rpcpassword=233",
+		// "-startclean=1",
 	)
 	fmt.Println(cmd.Args)
-	err = cmd.Start()
-	if err != nil {
-		return
-	}
+	go func(){
+		cmd.Start()
+	}()
 	go func() {
-		fmt.Println("Wait for message to kill bitcoind")
+		fmt.Println("Wait for message to kill omnicored")
 		<-closeChan
-		fmt.Println("Received message,killing bitcoind regtest")
+		fmt.Println("Received message,killing omnicored regtest")
 
 		if e := cmd.Process.Kill(); e != nil {
-			fmt.Println("关闭 bitcoind 时发生异常", e)
+			fmt.Println("关闭 omnicored 时发生异常", e)
 		}
-		fmt.Println("关闭 bitcoind 完成")
+		fmt.Println("关闭 omnicored 完成")
 		closeChan <- struct{}{}
 	}()
 
 	// err = cmd.Wait()
-	fmt.Println("等待1.8秒,让 bitcoind 启动")
-	time.Sleep(time.Millisecond * 1800)
+	fmt.Println("等待1.5秒,让 omnicored 启动")
+	time.Sleep(time.Millisecond * 1500)
 	return
 }

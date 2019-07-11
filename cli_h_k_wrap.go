@@ -23,10 +23,7 @@ func CliImportprivkey(cmd btcjson.ImportPrivKeyCmd) error {
 	cmdPrint := cmdAndPrint(exec.Command(
 		CmdBitcoinCli, args...,
 	))
-	if strings.Contains(cmdPrint, "error") {
-		return fmt.Errorf("import privkey return error: %s", cmdPrint)
-	}
-	return nil
+	return ToError(cmdPrint)
 }
 
 // CliImportpubkey https://bitcoin.org/en/developer-reference#importpubkey
