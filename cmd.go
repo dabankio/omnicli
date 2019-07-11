@@ -14,7 +14,7 @@ var (
 	PrintCmdOut = true
 )
 
-func noPrintCmd(fn func()) {
+func NoPrintCmd(fn func()) {
 	originVal := PrintCmdOut
 	PrintCmdOut = false
 	defer func() {

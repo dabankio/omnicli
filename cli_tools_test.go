@@ -14,11 +14,9 @@ func TestCliToolGetSomeAddrs(t *testing.T) {
 		cc <- struct{}{}
 	}()
 
-	addrs, err := CliToolGetSomeAddrs(10)
+	addrs, err := CliToolGetSomeAddrs(5)
 	ast.FailOnErr(err, "get addrs")
 	// fmt.Println(ToJsonIndent(addrs))
-	for _, add := range addrs {
-		fmt.Println(add.String())
-	}
+	fmt.Printf("%#v", addrs)
 
 }

@@ -24,7 +24,7 @@ func TestOmniSimpleTx(t *testing.T) {
 	)
 
 	{
-		noPrintCmd(func() {
+		NoPrintCmd(func() {
 			addrs, err = CliToolGetSomeAddrs(5)
 			testtool.FailOnFlag(t, err != nil, "Failed to get new address", err)
 			a0, a1 = addrs[0], addrs[1]
@@ -33,7 +33,7 @@ func TestOmniSimpleTx(t *testing.T) {
 		fmt.Println("accounts", ToJsonIndent(addrs))
 	}
 	{ //gen 101 to addr
-		noPrintCmd(func() {
+		NoPrintCmd(func() {
 			_, err := CliGeneratetoaddress(101, a0.Address, nil)
 			testtool.FailOnFlag(t, err != nil, "Failed to generate to address ", err)
 		})
