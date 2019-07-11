@@ -1,4 +1,4 @@
-package btccli
+package omnicli
 
 import (
 	"fmt"

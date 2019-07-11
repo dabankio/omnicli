@@ -1,4 +1,4 @@
-package btccli
+package omnicli
 
 import (
 	"encoding/json"
@@ -7,7 +7,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/lemon-sunxiansong/btccli/btcjson"
+	"github.com/lemon-sunxiansong/omnicli/btcjson"
 )
 
 func CliGetbestblockhash() (string, error) {

@@ -9,7 +9,7 @@ import (
 	"sort"
 	"testing"
 
-	"github.com/lemon-sunxiansong/btccli/btcjson"
+	"github.com/lemon-sunxiansong/omnicli/btcjson"
 )
 
 // TestUsageFlagStringer tests the stringized output for the UsageFlag type.

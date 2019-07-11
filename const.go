@@ -1,4 +1,4 @@
-package btccli
+package omnicli
 
 // 固定常量
 const (

@@ -12,7 +12,7 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/lemon-sunxiansong/btccli/btcjson"
+	"github.com/lemon-sunxiansong/omnicli/btcjson"
 )
 
 // TestBtcdExtCmds tests all of the btcd extended commands marshal and unmarshal

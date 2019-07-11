@@ -1,8 +1,8 @@
-package btccli
+package omnicli
 
 import (
 	"fmt"
-	"github.com/lemon-sunxiansong/btccli/btcjson"
+	"github.com/lemon-sunxiansong/omnicli/btcjson"
 	"os/exec"
 	"strings"
 )

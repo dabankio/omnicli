@@ -1,11 +1,11 @@
-package btccli
+package omnicli
 
 import (
 	"fmt"
-	"github.com/lemon-sunxiansong/btccli/testtool"
+	"github.com/lemon-sunxiansong/omnicli/testtool"
 	"testing"
 
-	"github.com/lemon-sunxiansong/btccli/btcjson"
+	"github.com/lemon-sunxiansong/omnicli/btcjson"
 )
 
 func TestCliCreatemultisig(t *testing.T) {

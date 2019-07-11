@@ -12,7 +12,7 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/lemon-sunxiansong/btccli/btcjson"
+	"github.com/lemon-sunxiansong/omnicli/btcjson"
 )
 
 // TestChainSvrWsCmds tests all of the chain server websocket-specific commands

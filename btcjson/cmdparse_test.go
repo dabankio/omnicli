@@ -10,7 +10,7 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/lemon-sunxiansong/btccli/btcjson"
+	"github.com/lemon-sunxiansong/omnicli/btcjson"
 )
 
 // TestAssignField tests the assignField function handles supported combinations

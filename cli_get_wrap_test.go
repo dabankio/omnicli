@@ -1,8 +1,8 @@
-package btccli
+package omnicli
 
 import (
 	"fmt"
-	"github.com/lemon-sunxiansong/btccli/testtool"
+	"github.com/lemon-sunxiansong/omnicli/testtool"
 	"testing"
 )
 

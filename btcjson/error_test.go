@@ -7,7 +7,7 @@ package btcjson_test
 import (
 	"testing"
 
-	"github.com/lemon-sunxiansong/btccli/btcjson"
+	"github.com/lemon-sunxiansong/omnicli/btcjson"
 )
 
 // TestErrorCodeStringer tests the stringized output for the ErrorCode type.

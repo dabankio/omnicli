@@ -1,7 +1,7 @@
-package btccli
+package omnicli
 
 import (
-	"github.com/lemon-sunxiansong/btccli/testtool"
+	"github.com/lemon-sunxiansong/omnicli/testtool"
 	"testing"
 )
 

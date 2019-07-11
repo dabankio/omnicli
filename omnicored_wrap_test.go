@@ -1,10 +1,10 @@
-package btccli
+package omnicli
 
 import (
 	"fmt"
 	"testing"
 
-	"github.com/lemon-sunxiansong/btccli/testtool"
+	"github.com/lemon-sunxiansong/omnicli/testtool"
 )
 
 func TestStartOmnicored(t *testing.T) {

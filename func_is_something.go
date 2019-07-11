@@ -1,7 +1,7 @@
-package btccli
+package omnicli
 
 import (
-	"github.com/lemon-sunxiansong/btccli/btcjson"
+	"github.com/lemon-sunxiansong/omnicli/btcjson"
 )
 
 func isCoinbaseTx(tx *btcjson.GetTransactionResult) bool {

@@ -1,12 +1,12 @@
-package btccli
+package omnicli
 
 import (
 	"fmt"
 	"testing"
 
-	"github.com/lemon-sunxiansong/btccli/testtool"
+	"github.com/lemon-sunxiansong/omnicli/testtool"
 
-	"github.com/lemon-sunxiansong/btccli/btcjson"
+	"github.com/lemon-sunxiansong/omnicli/btcjson"
 )
 
 /// TextTx createRawTx, signTx, sendTx

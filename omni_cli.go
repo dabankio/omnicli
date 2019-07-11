@@ -1,1 +1,1 @@
-package btccli
+package omnicli
