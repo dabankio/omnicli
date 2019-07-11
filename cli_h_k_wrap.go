@@ -10,9 +10,7 @@ import (
 
 // CliImportprivkey https://bitcoin.org/en/developer-reference#importprivkey
 func CliImportprivkey(cmd btcjson.ImportPrivKeyCmd) error {
-	args := []string{
-		CmdParamRegtest, "importprivkey", cmd.PrivKey,
-	}
+	args := basicParamsWith("importprivkey", cmd.PrivKey)
 	if cmd.Label != nil {
 		args = append(args, *cmd.Label)
 	} else {

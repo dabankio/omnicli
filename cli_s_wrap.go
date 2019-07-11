@@ -47,7 +47,7 @@ func CliSendrawtransaction(cmd btcjson.SendRawTransactionCmd) (string, error) {
 		CmdBitcoinCli, args...,
 	))
 	//TODO validate hex
-	return cmdPrint, nil
+	return cmdPrint, ToError(cmdPrint)
 }
 
 // CliSignrawtransactionwithkey [Disabled in omni current version] https://bitcoin.org/en/developer-reference#signrawtransactionwithkey
