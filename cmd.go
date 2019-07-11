@@ -14,13 +14,22 @@ var (
 	PrintCmdOut = true
 )
 
+func noPrintCmd(fn func()) {
+	originVal := PrintCmdOut
+	PrintCmdOut = false
+	defer func() {
+		PrintCmdOut = originVal
+	}()
+	fn()
+}
+
 func cmdAndPrint(cmd *exec.Cmd) string {
 	return cmdThenPrint(cmd, true)
 }
 
 // 执行cmd,然后将输出打印到控制台并return
 func cmdThenPrint(cmd *exec.Cmd, print bool) string {
-	if print {
+	if PrintCmdOut && print {
 		fmt.Println("[CMD]", cmd.Args)
 	}
 	stderr, err := cmd.StderrPipe()

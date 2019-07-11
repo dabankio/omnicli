@@ -61,5 +61,5 @@ func DecodeAndPrintTX(title, rawtx string) {
 	if err != nil {
 		panic(fmt.Errorf("failed to decode rawtx, %v", err))
 	}
-	fmt.Printf("----[TX]%s------\n%s\n", title, ToJsonIndent(tx))
+	fmt.Printf("----[TX]%s------\n%s\n%s\n", title, rawtx, ToJsonIndent(tx))
 }

@@ -47,7 +47,7 @@ func StartOmnicored() (closeChan chan struct{}, err error) {
 	}()
 
 	// err = cmd.Wait()
-	fmt.Println("等待1.5秒,让 bitcoind 启动")
-	time.Sleep(time.Millisecond * 1500)
+	fmt.Println("等待1.8秒,让 bitcoind 启动")
+	time.Sleep(time.Millisecond * 1800)
 	return
 }
