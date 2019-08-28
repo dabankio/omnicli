@@ -7,7 +7,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/lemon-sunxiansong/omnicli/btcjson"
+	"github.com/lomocoin/omnicli/btcjson"
 )
 
 func CliGetbestblockhash() (string, error) {

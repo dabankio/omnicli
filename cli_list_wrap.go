@@ -3,7 +3,7 @@ package omnicli
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/lemon-sunxiansong/omnicli/btcjson"
+	"github.com/lomocoin/omnicli/btcjson"
 	"os/exec"
 	"strconv"
 )

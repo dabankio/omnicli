@@ -5,7 +5,7 @@ import (
 	"os/exec"
 	"strconv"
 
-	"github.com/lemon-sunxiansong/omnicli/btcjson"
+	"github.com/lomocoin/omnicli/btcjson"
 )
 
 // CliOmniCreaterawtxChange https://github.com/OmniLayer/omnicore/blob/master/src/omnicore/doc/rpc-api.md#omni_createrawtx_change

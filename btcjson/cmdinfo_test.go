@@ -8,7 +8,7 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/lemon-sunxiansong/omnicli/btcjson"
+	"github.com/lomocoin/omnicli/btcjson"
 )
 
 // TestCmdMethod tests the CmdMethod function to ensure it retunrs the expected

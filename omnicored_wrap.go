@@ -2,7 +2,9 @@ package omnicli
 
 import (
 	"fmt"
+	"os"
 	"os/exec"
+	"sync"
 	"time"
 )
 
@@ -31,8 +33,13 @@ func StartOmnicored() (closeChan chan struct{}, err error) {
 		// "-startclean=1",
 	)
 	fmt.Println(cmd.Args)
-	go func(){
+	var wg sync.WaitGroup
+	wg.Add(1)
+	go func() {
+		cmd.Stdout = os.Stdout
+		cmd.Stderr = os.Stderr
 		cmd.Start()
+		wg.Done()
 	}()
 	go func() {
 		fmt.Println("Wait for message to kill omnicored")
@@ -48,6 +55,7 @@ func StartOmnicored() (closeChan chan struct{}, err error) {
 
 	// err = cmd.Wait()
 	fmt.Println("等待1.5秒,让 omnicored 启动")
+	wg.Wait()
 	time.Sleep(time.Millisecond * 1500)
 	return
 }

@@ -1,3 +1,3 @@
-module github.com/lemon-sunxiansong/omnicli
+module github.com/lomocoin/omnicli
 
 go 1.12

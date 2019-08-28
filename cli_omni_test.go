@@ -1,7 +1,7 @@
 package omnicli
 
 import (
-	"github.com/lemon-sunxiansong/omnicli/testtool"
+	"github.com/lomocoin/omnicli/testtool"
 	"testing"
 )
 

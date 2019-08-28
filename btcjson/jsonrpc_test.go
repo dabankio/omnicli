@@ -9,7 +9,7 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/lemon-sunxiansong/omnicli/btcjson"
+	"github.com/lomocoin/omnicli/btcjson"
 )
 
 // TestIsValidIDType ensures the IsValidIDType function behaves as expected.

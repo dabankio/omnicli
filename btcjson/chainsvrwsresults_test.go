@@ -9,7 +9,7 @@ import (
 	"encoding/json"
 	"testing"
 
-	"github.com/lemon-sunxiansong/omnicli/btcjson"
+	"github.com/lomocoin/omnicli/btcjson"
 )
 
 // TestChainSvrWsResults ensures any results that have custom marshalling

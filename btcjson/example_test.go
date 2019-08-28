@@ -8,7 +8,7 @@ import (
 	"encoding/json"
 	"fmt"
 
-	"github.com/lemon-sunxiansong/omnicli/btcjson"
+	"github.com/lomocoin/omnicli/btcjson"
 )
 
 // This example demonstrates how to create and marshal a command into a JSON-RPC

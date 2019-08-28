@@ -8,7 +8,7 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/lemon-sunxiansong/omnicli/btcjson"
+	"github.com/lomocoin/omnicli/btcjson"
 )
 
 // TestHelpers tests the various helper functions which create pointers to
