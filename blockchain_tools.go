@@ -10,19 +10,19 @@ type scanOps struct {
 	simpleBlock       bool // 打印block的少数字段
 }
 
-func scanAll() {
-	scanChain(scanOps{})
+func scanAll(cli *Cli) {
+	scanChain(cli, scanOps{})
 }
-func scanChain(op scanOps) {
+func scanChain(cli *Cli, op scanOps) {
 	dividePrint("迭代所有的块")
 
-	count, err := CliGetblockcount()
+	count, err := cli.Getblockcount()
 	panicIf(err, "Failed to get block count")
 	fmt.Println("Total height:", count)
 
 	for i := count - 1; i >= 0; i-- {
-		blchash, _ := CliGetblockhash(i)
-		_, _, blc, err := CliGetblock(blchash, 2)
+		blchash, _ := cli.Getblockhash(i)
+		_, _, blc, err := cli.Getblock(blchash, 2)
 		panicIf(err, "Failed to get block")
 
 		if !op.includeGenBlock && len(blc.Tx) < 2 {
@@ -41,10 +41,9 @@ func scanChain(op scanOps) {
 		} else {
 			fmt.Println("hight", i, jsonStr(blc))
 		}
-		fmt.Println()
 
 		for ti, txHash := range blc.Tx {
-			tx, _ := CliGettransaction(txHash.Hash, true)
+			tx, _ := cli.Gettransaction(txHash.Hash, true)
 
 			if tx.TxID == "" {
 				fmt.Printf("skiped empty tx %d/%d\n", i, ti)

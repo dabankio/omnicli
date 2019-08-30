@@ -78,8 +78,8 @@ func cmdIsPortContainsNameRunning(port uint, name string) bool {
 	}
 }
 
-var basicParams = []string{CmdParamRegtest, "-rpcuser=rpcusr", "-rpcpassword=233", "-rpcport=18443"}
+// var basicParams = []string{CmdParamRegtest, "-rpcuser=rpcusr", "-rpcpassword=233", "-rpcport=18443"}
 
-func basicParamsWith(params ...string) []string {
-	return append(basicParams, params...)
-}
+// func basicParamsWith1(params ...string) []string {
+// 	return append(basicParams, params...)
+// }

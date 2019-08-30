@@ -6,13 +6,11 @@ import (
 )
 
 func TestCliOmniCreatepaloadSimplesend(t *testing.T) {
-	closeChan, err := StartOmnicored()
+	cli, killomnicored, err := RunOmnicored(&RunOptions{NewTmpDir: true})
 	testtool.FailOnFlag(t, err != nil, "Failed to start d", err)
-	defer func() {
-		closeChan <- struct{}{}
-	}()
+	defer killomnicored()
 
-	ret, err := CliOmniCreatepaloadSimplesend(2, "0.1")
+	ret, err := cli.OmniCreatepaloadSimplesend(2, "0.1")
 	testtool.FailOnErr(t, err, "")
 	expectedRet := "00000000000000020000000000989680"
 	testtool.FailOnFlag(t, ret != expectedRet, "not as expected", ret, expectedRet)

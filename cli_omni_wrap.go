@@ -8,9 +8,9 @@ import (
 	"github.com/lomocoin/omnicli/btcjson"
 )
 
-// CliOmniCreaterawtxChange https://github.com/OmniLayer/omnicore/blob/master/src/omnicore/doc/rpc-api.md#omni_createrawtx_change
-func CliOmniCreaterawtxChange(rawtx string, prevtxs []btcjson.PreviousDependentTxOutput, destination string, fee float64, position *int) (string, error) {
-	args := basicParamsWith(
+// OmniCreaterawtxChange https://github.com/OmniLayer/omnicore/blob/master/src/omnicore/doc/rpc-api.md#omni_createrawtx_change
+func (cli *Cli) OmniCreaterawtxChange(rawtx string, prevtxs []btcjson.PreviousDependentTxOutput, destination string, fee float64, position *int) (string, error) {
+	args := cli.AppendArgs(
 		"omni_createrawtx_change",
 		rawtx,
 		ToJson(prevtxs),
@@ -22,50 +22,50 @@ func CliOmniCreaterawtxChange(rawtx string, prevtxs []btcjson.PreviousDependentT
 	}
 
 	cmdPrint := cmdAndPrint(exec.Command(
-		CmdBitcoinCli, args...,
+		CmdOmniCli, args...,
 	))
 	return cmdPrint, ToError(cmdPrint)
 }
 
-// CliOmniCreaterawtxOpreturn Adds a payload with class C (op-return) encoding to the transaction.
+// OmniCreaterawtxOpreturn Adds a payload with class C (op-return) encoding to the transaction.
 // If no raw transaction is provided, a new transaction is created.
 // If the data encoding fails, then the transaction is not modified.
-func CliOmniCreaterawtxOpreturn(rawtx string, payload string) (string, error) {
-	args := basicParamsWith(
+func (cli *Cli) OmniCreaterawtxOpreturn(rawtx string, payload string) (string, error) {
+	args := cli.AppendArgs(
 		"omni_createrawtx_opreturn", rawtx, payload,
 	)
 	cmdPrint := cmdAndPrint(exec.Command(
-		CmdBitcoinCli, args...,
+		CmdOmniCli, args...,
 	))
 	return cmdPrint, ToError(cmdPrint)
 }
 
-// CliOmniCreaterawtxReference Adds a reference output to the transaction.
+// OmniCreaterawtxReference Adds a reference output to the transaction.
 // If no raw transaction is provided, a new transaction is created.
 // The output value is set to at least the dust threshold.
-func CliOmniCreaterawtxReference(rawtx, destination string, amount *int) (string, error) {
-	args := basicParamsWith(
+func (cli *Cli) OmniCreaterawtxReference(rawtx, destination string, amount *int) (string, error) {
+	args := cli.AppendArgs(
 		"omni_createrawtx_reference", rawtx, destination,
 	)
 	if amount != nil {
 		args = append(args, strconv.Itoa(*amount))
 	}
 	cmdPrint := cmdAndPrint(exec.Command(
-		CmdBitcoinCli, args...,
+		CmdOmniCli, args...,
 	))
 	return cmdPrint, ToError(cmdPrint)
 }
 
-// CliOmniCreatepaloadSimplesend .
-func CliOmniCreatepaloadSimplesend(propertyID int, amount string) (string, error) {
-	args := basicParamsWith(
+// OmniCreatepaloadSimplesend .
+func (cli *Cli) OmniCreatepaloadSimplesend(propertyID int, amount string) (string, error) {
+	args := cli.AppendArgs(
 		"omni_createpayload_simplesend",
 		strconv.Itoa(propertyID),
 		amount,
 	)
 
 	cmdPrint := cmdAndPrint(exec.Command(
-		CmdBitcoinCli, args...,
+		CmdOmniCli, args...,
 	))
 	return cmdPrint, ToError(cmdPrint)
 }
@@ -77,9 +77,9 @@ type OmniGetbalanceResult struct {
 	Frozen   string `json:"frozen"`
 }
 
-// CliOmniGetbalance https://github.com/OmniLayer/omnicore/blob/master/src/omnicore/doc/rpc-api.md#omni_getbalance
-func CliOmniGetbalance(address string, propertyid int) (*OmniGetbalanceResult, error) {
-	cmdPrint := cliResult("omni_getbalance", address, strconv.Itoa(propertyid))
+// OmniGetbalance https://github.com/OmniLayer/omnicore/blob/master/src/omnicore/doc/rpc-api.md#omni_getbalance
+func (cli *Cli) OmniGetbalance(address string, propertyid int) (*OmniGetbalanceResult, error) {
+	cmdPrint := cli.cliResult("omni_getbalance", address, strconv.Itoa(propertyid))
 	var ret OmniGetbalanceResult
 	err := json.Unmarshal([]byte(cmdPrint), &ret)
 	return &ret, WrapJSONDecodeError(err, cmdPrint)
@@ -103,9 +103,9 @@ type OmniGettransactionResult struct {
 	Propertyid int `json:"propertyid"`
 }
 
-// CliOmniGettransaction .
-func CliOmniGettransaction(txHash string) (*OmniGettransactionResult, error) {
-	cmdPrint := cliResult("omni_gettransaction", txHash)
+// OmniGettransaction .
+func (cli *Cli) OmniGettransaction(txHash string) (*OmniGettransactionResult, error) {
+	cmdPrint := cli.cliResult("omni_gettransaction", txHash)
 	var ret OmniGettransactionResult
 	err := json.Unmarshal([]byte(cmdPrint), &ret)
 	return &ret, WrapJSONDecodeError(err, cmdPrint)
@@ -120,9 +120,9 @@ type OmniSenddissuancefixedCmd struct {
 	Category, Subcategory, Name, URL, Data, Amount string
 }
 
-// CliOmniSendissuancefixed https://github.com/OmniLayer/omnicore/blob/master/src/omnicore/doc/rpc-api.md#omni_sendissuancefixed
-func CliOmniSendissuancefixed(cmd *OmniSenddissuancefixedCmd) (string, error) {
-	cmdPrint := cliResult(
+// OmniSendissuancefixed https://github.com/OmniLayer/omnicore/blob/master/src/omnicore/doc/rpc-api.md#omni_sendissuancefixed
+func (cli *Cli) OmniSendissuancefixed(cmd *OmniSenddissuancefixedCmd) (string, error) {
+	cmdPrint := cli.cliResult(
 		"omni_sendissuancefixed",
 		cmd.Fromaddress, strconv.Itoa(cmd.Ecosystem), strconv.Itoa(cmd.Typ), strconv.Itoa(cmd.Previousid),
 		cmd.Category, cmd.Subcategory, cmd.Name, cmd.URL, cmd.Data, cmd.Amount,

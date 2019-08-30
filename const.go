@@ -27,3 +27,10 @@ var (
 		{Address: "mzfveH16kQ7rNdPHNJMrkpWqjo7hVdpVHC", Privkey: "cPEnbKH87636VhGhsVQxHBV6RmPyp3d1NL9q9XQJGXpyMhyUJoMJ", Pubkey: "026c27bbb52665e6d1d3d1f5ccb8ac7b7b27ee8636019af14272ebaa0308b800b2"},
 	}
 )
+
+// some net id
+const (
+	NetRegtest = iota + 1
+	NetTestnet3
+	NetMainnet
+)

@@ -8,13 +8,11 @@ import (
 
 func TestCliToolGetSomeAddrs(t *testing.T) {
 	ast := testtool.NewSimpleAssert(t)
-	cc, err := StartOmnicored()
+	cli, killomnicored, err := RunOmnicored(&RunOptions{NewTmpDir: true})
 	ast.FailOnErr(err, "start d")
-	defer func() {
-		cc <- struct{}{}
-	}()
+	defer killomnicored()
 
-	addrs, err := CliToolGetSomeAddrs(5)
+	addrs, err := cli.ToolGetSomeAddrs(5)
 	ast.FailOnErr(err, "get addrs")
 	// fmt.Println(ToJsonIndent(addrs))
 	fmt.Printf("%#v", addrs)

@@ -3,6 +3,7 @@ package omnicli
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/lomocoin/omnicli/btcjson"
 	"strings"
 )
 
@@ -53,4 +54,15 @@ func WrapJSONDecodeError(e error, rawJSON string) error {
 
 func dividePrint(msg string) {
 	fmt.Printf("\n--------------%s--------------\n", msg)
+}
+
+func isCoinbaseTx(tx *btcjson.GetTransactionResult) bool {
+	flag := false
+	for _, dtl := range tx.Details {
+		if dtl.Category == "immature" || dtl.Category == "generate" {
+			flag = true
+			break
+		}
+	}
+	return len(tx.Details) == 0 && flag
 }

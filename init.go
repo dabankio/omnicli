@@ -5,11 +5,11 @@ import (
 	"os"
 )
 
-// bitcoin bin path
+// omnicore bin path
 var (
-	BasePath      = "/Users/some_user/Applications/bitcoin/bin" //see init()
-	CmdOmnicored  = BasePath + "/omnicored"
-	CmdBitcoinCli = BasePath + "/omnicore-cli"
+	BasePath     = "/Users/some_user/Applications/omnicore/bin" //see init()
+	CmdOmnicored = BasePath + "/omnicored"
+	CmdOmniCli   = BasePath + "/omnicore-cli"
 )
 
 func init() {
@@ -23,7 +23,7 @@ func init() {
 	}
 	BasePath = p
 	fmt.Println(":omni bin path:", BasePath)
-	CmdOmnicored = BasePath + "/omnicored"     //windows may need change suffix
-	CmdBitcoinCli = BasePath + "/omnicore-cli" //windows may need change suffix
+	CmdOmnicored = BasePath + "/omnicored"  //windows may need change suffix
+	CmdOmniCli = BasePath + "/omnicore-cli" //windows may need change suffix
 
 }
