@@ -12,7 +12,7 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/lomocoin/omnicli/btcjson"
+	"github.com/dabankio/omnicli/btcjson"
 )
 
 // TestChainSvrWsNtfns tests all of the chain server websocket-specific

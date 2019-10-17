@@ -2,10 +2,10 @@ package omnicli
 
 import (
 	"fmt"
-	"github.com/lomocoin/omnicli/testtool"
+	"github.com/dabankio/omnicli/testtool"
 	"testing"
 
-	"github.com/lomocoin/omnicli/btcjson"
+	"github.com/dabankio/omnicli/btcjson"
 )
 
 func TestCliCreatemultisig(t *testing.T) {

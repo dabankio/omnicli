@@ -9,7 +9,7 @@ import (
 	"encoding/json"
 	"testing"
 
-	"github.com/lomocoin/omnicli/btcjson"
+	"github.com/dabankio/omnicli/btcjson"
 )
 
 // TestBtcdExtCustomResults ensures any results that have custom marshalling

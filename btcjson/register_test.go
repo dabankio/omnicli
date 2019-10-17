@@ -9,7 +9,7 @@ import (
 	"sort"
 	"testing"
 
-	"github.com/lomocoin/omnicli/btcjson"
+	"github.com/dabankio/omnicli/btcjson"
 )
 
 // TestUsageFlagStringer tests the stringized output for the UsageFlag type.

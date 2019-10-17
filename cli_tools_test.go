@@ -2,7 +2,7 @@ package omnicli
 
 import (
 	"fmt"
-	"github.com/lomocoin/omnicli/testtool"
+	"github.com/dabankio/omnicli/testtool"
 	"testing"
 )
 

@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/lomocoin/omnicli/testtool"
+	"github.com/dabankio/omnicli/testtool"
 )
 
 func TestStartOmnicored(t *testing.T) {

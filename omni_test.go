@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/lomocoin/omnicli/testtool"
+	"github.com/dabankio/omnicli/testtool"
 
-	"github.com/lomocoin/omnicli/btcjson"
+	"github.com/dabankio/omnicli/btcjson"
 )
 
 /// TextTx createRawTx, signTx, sendTx

@@ -1,7 +1,7 @@
 package omnicli
 
 import (
-	"github.com/lomocoin/omnicli/testtool"
+	"github.com/dabankio/omnicli/testtool"
 	"testing"
 )
 

@@ -1,3 +1,3 @@
-module github.com/lomocoin/omnicli
+module github.com/dabankio/omnicli
 
 go 1.12

@@ -2,7 +2,7 @@ package omnicli
 
 import (
 	"fmt"
-	"github.com/lomocoin/omnicli/btcjson"
+	"github.com/dabankio/omnicli/btcjson"
 	"os/exec"
 )
 
