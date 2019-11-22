@@ -3,10 +3,11 @@ package omnicli
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/dabankio/omnicli/btcjson"
 	"os/exec"
 	"strconv"
 	"strings"
+
+	"github.com/dabankio/omnicli/btcjson"
 )
 
 // Addmultisigaddress .
@@ -44,15 +45,11 @@ func (cli *Cli) Createrawtransaction(cmd btcjson.CreateRawTransactionCmd) (strin
 	args := cli.AppendArgs(
 		"createrawtransaction",
 		ToJson(cmd.Inputs),
-		IfOrString(len(cmd.Outputs) > 0, ToJson(cmd.Outputs), "{}"),
+		IfOrString(len(cmd.Amounts) > 0, ToJson(cmd.Amounts), "{}"),
+		IfOrString(cmd.LockTime != nil, strconv.Itoa(int(*cmd.LockTime)), "0"),
+		IfOrString(len(cmd.Outputs) > 0, ToJson(cmd.Outputs), ""),
 	)
-	if cmd.LockTime != nil {
-		args = append(args, strconv.Itoa(int(*cmd.LockTime)))
-	}
-	cmdPrint := cmdAndPrint(exec.Command(
-		CmdOmniCli, args...,
-	))
-	//TODO validate hex
+	cmdPrint := cmdAndPrint(exec.Command(CmdOmniCli, args...))
 	return cmdPrint, ToError(cmdPrint)
 }
 
@@ -87,7 +84,6 @@ func (cli *Cli) Dumpprivkey(addr string) (string, error) {
 	cmdPrint := cmdAndPrint(exec.Command(
 		CmdOmniCli, cli.AppendArgs("dumpprivkey", addr)...,
 	))
-	//TODO validate privKey
 	return cmdPrint, ToError(cmdPrint)
 }
 
@@ -122,8 +118,7 @@ func (cli *Cli) Getbestblockhash() (string, error) {
 	cmdPrint := cmdAndPrint(exec.Command(
 		CmdOmniCli, CmdParamRegtest, "getbestblockhash",
 	))
-	//TODO validate hash
-	return cmdPrint, nil
+	return cmdPrint, ToError(cmdPrint)
 }
 
 //  support
@@ -160,8 +155,7 @@ func (cli *Cli) Getblockcount() (int, error) {
 // Getblockhash .
 func (cli *Cli) Getblockhash(height int) (string, error) {
 	cmdPrint := cmdAndPrint(exec.Command(CmdOmniCli, CmdParamRegtest, "getblockhash", strconv.Itoa(height)))
-	//TODO validate hash
-	return strings.TrimSpace(cmdPrint), nil
+	return strings.TrimSpace(cmdPrint), ToError(cmdPrint)
 }
 
 // Getblock https://bitcoin.org/en/developer-reference#getblock
@@ -191,6 +185,32 @@ func (cli *Cli) Getblock(hash string, verbosity int) (*string, *btcjson.GetBlock
 	return &hex, &b, &b2, err
 }
 
+// MemPoolAncestorsResult .
+type MemPoolAncestorsResult struct {
+	NoVerbose []string
+	Verbose   *btcjson.GetMempoolEntryResult
+}
+
+// GetMemPoolAncestors .
+func (cli *Cli) GetMemPoolAncestors(txid string, verbose bool, ret *MemPoolAncestorsResult) error {
+	args := cli.AppendArgs("getmempoolancestors", txid, strconv.FormatBool(verbose))
+	cmdPrint := cmdAndPrint(exec.Command(CmdOmniCli, args...))
+	if verbose {
+		err := json.Unmarshal([]byte(cmdPrint), ret.Verbose)
+		if err != nil {
+			return WrapJSONDecodeError(err, cmdPrint)
+		}
+	} else {
+		var ids []string
+		err := json.Unmarshal([]byte(cmdPrint), &ids)
+		if err != nil {
+			return WrapJSONDecodeError(err, cmdPrint)
+		}
+		ret.NoVerbose = ids
+	}
+	return nil
+}
+
 // Getnewaddress https://bitcoin.org/en/developer-reference#getnewaddress
 func (cli *Cli) Getnewaddress(labelPtr, addressTypePtr *string) (hexedAddress string, err error) {
 	label := ""
@@ -202,7 +222,6 @@ func (cli *Cli) Getnewaddress(labelPtr, addressTypePtr *string) (hexedAddress st
 		args = append(args, *addressTypePtr)
 	}
 	cmdPrint := cmdAndPrint(exec.Command(CmdOmniCli, args...))
-	//TODO validate address
 	return cmdPrint, ToError(cmdPrint)
 }
 
@@ -353,7 +372,6 @@ func (cli *Cli) Sendtoaddress(cmd *btcjson.SendToAddressCmd) (string, error) {
 	cmdPrint := cmdAndPrint(exec.Command(
 		CmdOmniCli, args...,
 	))
-	//TODO validate hex
 	return cmdPrint, ToError(cmdPrint)
 }
 
@@ -369,7 +387,6 @@ func (cli *Cli) Sendrawtransaction(cmd btcjson.SendRawTransactionCmd) (string, e
 	cmdPrint := cmdAndPrint(exec.Command(
 		CmdOmniCli, args...,
 	))
-	//TODO validate hex
 	return cmdPrint, ToError(cmdPrint)
 }
 
@@ -398,8 +415,10 @@ func (cli *Cli) Signrawtransaction(cmd btcjson.SignRawTransactionCmd) (btcjson.S
 		"signrawtransaction",
 		cmd.RawTx,
 		IfOrString(len(cmd.Prevtxs) > 0, ToJson(cmd.Prevtxs), ""),
-		ToJson(cmd.PrivKeys),
 	)
+	if cmd.PrivKeys != nil && len(*cmd.PrivKeys) > 0 {
+		args = append(args, ToJson(cmd.PrivKeys))
+	}
 	if cmd.Sighashtype != nil {
 		args = append(args, *cmd.Sighashtype)
 	}

@@ -95,6 +95,11 @@ func RunOmnicored(optionsPtr *RunOptions) (*Cli, func(), error) {
 		if e := cmd.Process.Kill(); e != nil {
 			fmt.Println("关闭 omnicored 时发生异常", e)
 		}
+		for _, hookFn := range killHooks {
+			if e := hookFn(); e != nil {
+				fmt.Println("[warn] hook error in killing ", e)
+			}
+		}
 		fmt.Println("关闭 omnicored 完成")
 		closeChan <- struct{}{}
 	}()
