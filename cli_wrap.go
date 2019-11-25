@@ -46,9 +46,16 @@ func (cli *Cli) Createrawtransaction(cmd btcjson.CreateRawTransactionCmd) (strin
 		"createrawtransaction",
 		ToJson(cmd.Inputs),
 		IfOrString(len(cmd.Amounts) > 0, ToJson(cmd.Amounts), "{}"),
-		IfOrString(cmd.LockTime != nil, strconv.Itoa(int(*cmd.LockTime)), "0"),
-		IfOrString(len(cmd.Outputs) > 0, ToJson(cmd.Outputs), ""),
 	)
+	if cmd.LockTime != nil {
+		args = append(args, strconv.Itoa(int(*cmd.LockTime)))
+	} else {
+		args = append(args, "0")
+	}
+
+	if len(cmd.Outputs) > 0 {
+		args = append(args, ToJson(cmd.Outputs))
+	}
 	cmdPrint := cmdAndPrint(exec.Command(CmdOmniCli, args...))
 	return cmdPrint, ToError(cmdPrint)
 }
